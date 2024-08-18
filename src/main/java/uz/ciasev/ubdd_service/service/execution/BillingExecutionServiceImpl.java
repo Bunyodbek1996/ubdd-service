@@ -99,7 +99,9 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
             return;
         }
 
-        Invoice invoice = invoiceService.findInvoiceByExternalIdAndOrganId(paymentDTO.getExternalId(), user.getOrganId());
+        Invoice invoice = invoiceRepository.findByInvoiceSerial("MAB_" + paymentDTO.getInvoiceSerial()).orElseThrow(
+                () -> new EntityByParamsNotFound(Invoice.class, "invoiceSerial", paymentDTO.getInvoiceSerial())
+        );
 
         Payment savedPayment = paymentService.save(invoice, paymentDTO);
 
