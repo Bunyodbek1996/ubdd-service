@@ -31,8 +31,6 @@ public class ProtocolCreateServiceCore implements ProtocolCreateService {
 
     @Override
     @Transactional
-    @DigitalSignatureCheck(event = SignatureEvent.PROTOCOL_CREATION)
-    @ViolatorUpdateDueToProtocolCreation
     public Protocol createElectronProtocol(User user, ProtocolRequestDTO protocolDTO) {
 
         protocolCreateAdditionalValidationService.validateExternalId(protocolDTO);
