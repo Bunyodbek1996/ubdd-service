@@ -93,13 +93,14 @@ public class CsvProcessorService {
                     .withSeparator(',')
                     .build();
 
+            int i=0;
             for (ProtocolData row : csvToBean) {
                 try {
                     saveToDatabase(row);
                 } catch (Exception e) {
                     collectToListAndSaveSomeFile(e.getMessage() + "\n\n");
                 }
-                break;
+                if (++i > 1) break;
             }
 
         } catch (Exception e) {
@@ -198,6 +199,9 @@ public class CsvProcessorService {
         SingleResolutionRequestDTO resolutionRequestDTO = new SingleResolutionRequestDTO();
         resolutionRequestDTO.setExternalId(Long.parseLong(protocolData.getResolution_externalId()));
         resolutionRequestDTO.setConsiderUserInfo(protocolData.getResolution_considerUserInfo());
+        resolutionRequestDTO.setInspectorPositionId(protocolData.getResolution_inspectorPositionId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorPositionId()));
+        resolutionRequestDTO.setInspectorRankId(protocolData.getResolution_inspectorRankId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorRankId()));
+        resolutionRequestDTO.setInspectorWorkCertificate(protocolData.getResolution_inspectorWorkCertificate());
         resolutionRequestDTO.setResolutionTime(strToLocalDateTime(protocolData.getResolution_resolutionTime()));
         resolutionRequestDTO.setIsArticle33(protocolData.getResolution_isArticle33() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle33()));
         resolutionRequestDTO.setIsArticle34(protocolData.getResolution_isArticle34() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle34()));

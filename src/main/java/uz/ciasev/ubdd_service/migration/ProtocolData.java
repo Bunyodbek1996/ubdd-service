@@ -961,6 +961,31 @@ public class ProtocolData {
         this.resolution_considerUserInfo = resolution_considerUserInfo;
     }
 
+    public String getResolution_inspectorPositionId() {
+        return resolution_inspectorPositionId;
+    }
+
+    public void setResolution_inspectorPositionId(String resolution_inspectorPositionId) {
+        this.resolution_inspectorPositionId = resolution_inspectorPositionId;
+    }
+
+    public String getResolution_inspectorRankId() {
+        return resolution_inspectorRankId;
+    }
+
+    public void setResolution_inspectorRankId(String resolution_inspectorRankId) {
+        this.resolution_inspectorRankId = resolution_inspectorRankId;
+    }
+
+    public String getResolution_inspectorWorkCertificate() {
+        return resolution_inspectorWorkCertificate;
+    }
+
+    public void setResolution_inspectorWorkCertificate(String resolution_inspectorWorkCertificate) {
+        this.resolution_inspectorWorkCertificate = resolution_inspectorWorkCertificate;
+    }
+
+
     @Override
     public String toString() {
         return "ProtocolData{" +
@@ -1001,6 +1026,9 @@ public class ProtocolData {
                 ", protocol_violator_violatorDetail_signature='" + protocol_violator_violatorDetail_signature + '\'' +
                 ", resolution_externalId='" + resolution_externalId + '\'' +
                 ", resolution_considerUserInfo='" + resolution_considerUserInfo + '\'' +
+                ", resolution_inspectorPositionId='" + resolution_inspectorPositionId + '\'' +
+                ", resolution_inspectorRankId='" + resolution_inspectorRankId + '\'' +
+                ", resolution_inspectorWorkCertificate='" + resolution_inspectorWorkCertificate + '\'' +
                 ", resolution_resolutionTime='" + resolution_resolutionTime + '\'' +
                 ", resolution_isArticle33='" + resolution_isArticle33 + '\'' +
                 ", resolution_isArticle34='" + resolution_isArticle34 + '\'' +
