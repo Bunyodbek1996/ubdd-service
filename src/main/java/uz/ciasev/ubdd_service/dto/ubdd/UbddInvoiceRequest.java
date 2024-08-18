@@ -78,7 +78,7 @@ public class UbddInvoiceRequest {
 
         invoice.setOrganName(this.organName);
 
-        invoice.setInvoiceSerial(this.invoiceSerial);
+        invoice.setInvoiceSerial("MAB_" + this.invoiceSerial);
 
         invoice.setInvoiceId(this.invoiceId);
         invoice.setAmount(this.penaltyPunishmentAmount);

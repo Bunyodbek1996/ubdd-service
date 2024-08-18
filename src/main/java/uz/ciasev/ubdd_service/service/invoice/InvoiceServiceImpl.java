@@ -40,6 +40,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         request.setDiscount50Amount(request.getDiscount50Amount() == null ? null : request.getDiscount50Amount() * 100);
 
         Invoice invoice = request.toEntity();
+
+        Optional<Invoice> optionalInvoice = invoiceRepository.findByInvoiceSerial(invoice.getInvoiceSerial());
+        if (optionalInvoice.isPresent()) {
+            return optionalInvoice.get();
+        }
+
         invoice.setOrganName(user.getOrgan().getName().get(MultiLanguage.Language.LAT));
         invoice.setBankInn("0000");
         invoice.setBankName("0000");
