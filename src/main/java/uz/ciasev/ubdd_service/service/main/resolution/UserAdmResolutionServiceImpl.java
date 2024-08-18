@@ -59,13 +59,9 @@ public class UserAdmResolutionServiceImpl implements UserAdmResolutionService {
         Protocol protocol = protocolService.findByExternalId(user, String.valueOf(externalId));
         AdmCase admCase = admCaseService.getByProtocolId(protocol.getId());
 
-        if (admCase.getOrgan().getId() == 12) {
-            Optional<Decision> optionalDecision = resolutionService.getDecisionOfResolutionById(admCase.getId());
-            if (optionalDecision.isPresent() &&
-                    checkAdmCaseStatusIsSuitable(admCase) &&
-                    checkResolutionIsSame(optionalDecision.get(), requestDTO)) {
-                return getDtoOfResolutionAlreadyMade(optionalDecision.get());
-            }
+        Optional<Decision> optionalDecision = resolutionService.getDecisionOfResolutionById(admCase.getId());
+        if (optionalDecision.isPresent() && optionalDecision.get().isActive()) {
+            return getDtoOfResolutionAlreadyMade(optionalDecision.get());
         }
 
         return createSingle(user, admCase, requestDTO);
