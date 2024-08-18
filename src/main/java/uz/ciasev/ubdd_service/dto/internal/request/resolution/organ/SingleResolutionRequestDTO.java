@@ -44,6 +44,15 @@ public class SingleResolutionRequestDTO implements DecisionRequestDTO, Resolutio
     @NotNull(message = "CONSIDER_USER_INFO_REQUIRED")
     private String considerUserInfo;
 
+    @NotNull(message = "CONSIDER_USER_INFO_REQUIRED")
+    private Long inspectorPositionId;
+
+    @NotNull(message = "CONSIDER_USER_INFO_REQUIRED")
+    private Long inspectorRankId;
+
+    @NotNull(message = "CONSIDER_USER_INFO_REQUIRED")
+    private String inspectorWorkCertificate;
+
     private Boolean isJuridic;
 
     @JsonProperty(value = "articleId")
@@ -143,6 +152,7 @@ public class SingleResolutionRequestDTO implements DecisionRequestDTO, Resolutio
         resolution.setConsiderSignature(this.signature);
         resolution.setResolutionTime(this.resolutionTime);
         resolution.setConsiderUserInfo(this.considerUserInfo);
+        resolution.setInspectorWorkCertificate(this.inspectorWorkCertificate);
 
         return resolution;
     }

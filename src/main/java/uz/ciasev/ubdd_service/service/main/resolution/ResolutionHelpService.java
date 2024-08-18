@@ -56,8 +56,6 @@ public class ResolutionHelpService {
     private final ExecutionCallbackService executionService;
     private final ResolutionService resolutionService;
     private final PunishmentService punishmentService;
-    private final CompensationService compensationService;
-    private final EvidenceDecisionService evidenceDecisionService;
     private final AdmCaseStatusService statusService;
 
 

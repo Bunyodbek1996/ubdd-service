@@ -29,13 +29,15 @@ import static uz.ciasev.ubdd_service.entity.invoice.InvoiceOwnerTypeAlias.PENALT
 public class InvoiceServiceImpl implements InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
-    private final ProtocolService protocolService;
     private final PenaltyPunishmentRepository penaltyPunishmentRepository;
     private final InvoiceNumberGeneratorService invoiceNumberGeneratorService;
 
     @Override
     public Invoice create(User user, UbddInvoiceRequest request) {
 
+        request.setPenaltyPunishmentAmount(request.getPenaltyPunishmentAmount() == null ? null : request.getPenaltyPunishmentAmount() * 100);
+        request.setDiscount70Amount(request.getDiscount70Amount() == null ? null : request.getDiscount70Amount() * 100);
+        request.setDiscount50Amount(request.getDiscount50Amount() == null ? null : request.getDiscount50Amount() * 100);
 
         Invoice invoice = request.toEntity();
         invoice.setOrganName(user.getOrgan().getName().get(MultiLanguage.Language.LAT));

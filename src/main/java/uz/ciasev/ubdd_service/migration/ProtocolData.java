@@ -116,6 +116,15 @@ public class ProtocolData {
     @CsvCustomBindByName(column = "resolution_considerUserInfo", converter = NullValueConverter.class)
     private String resolution_considerUserInfo;
 
+    @CsvCustomBindByName(column = "resolution_inspectorPositionId", converter = NullValueConverter.class)
+    private String resolution_inspectorPositionId;
+
+    @CsvCustomBindByName(column = "resolution_inspectorRankId", converter = NullValueConverter.class)
+    private String resolution_inspectorRankId;
+
+    @CsvCustomBindByName(column = "resolution_inspectorWorkCertificate", converter = NullValueConverter.class)
+    private String resolution_inspectorWorkCertificate;
+
     @CsvCustomBindByName(column = "resolution_resolutionTime", converter = NullValueConverter.class)
     private String resolution_resolutionTime;
 

@@ -3,6 +3,10 @@ package uz.ciasev.ubdd_service.service.execution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
+import uz.ciasev.ubdd_service.entity.resolution.Resolution;
+import uz.ciasev.ubdd_service.entity.status.AdmStatus;
+import uz.ciasev.ubdd_service.entity.status.AdmStatusAlias;
 import uz.ciasev.ubdd_service.entity.user.User;
 import uz.ciasev.ubdd_service.exception.notfound.EntityByParamsNotFound;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPaymentDTO;
@@ -18,16 +22,20 @@ import uz.ciasev.ubdd_service.entity.resolution.punishment.PenaltyPunishment;
 import uz.ciasev.ubdd_service.entity.resolution.punishment.Punishment;
 import uz.ciasev.ubdd_service.entity.violator.Violator;
 import uz.ciasev.ubdd_service.exception.implementation.NotImplementedException;
+import uz.ciasev.ubdd_service.repository.invoice.InvoiceRepository;
 import uz.ciasev.ubdd_service.repository.invoice.PaymentRepository;
 import uz.ciasev.ubdd_service.repository.resolution.punishment.PenaltyPunishmentRepository;
 import uz.ciasev.ubdd_service.service.publicapi.eventdata.PublicApiWebhookEventPopulationService;
 import uz.ciasev.ubdd_service.service.court.CourtPaymentService;
 import uz.ciasev.ubdd_service.service.invoice.InvoiceService;
 import uz.ciasev.ubdd_service.service.invoice.PaymentService;
+import uz.ciasev.ubdd_service.service.resolution.ResolutionService;
 import uz.ciasev.ubdd_service.service.resolution.compensation.CompensationActionService;
 import uz.ciasev.ubdd_service.service.resolution.decision.DecisionService;
 import uz.ciasev.ubdd_service.service.resolution.punishment.PunishmentActionService;
 import uz.ciasev.ubdd_service.service.resolution.punishment.PunishmentService;
+import uz.ciasev.ubdd_service.service.status.AdmCaseStatusService;
+import uz.ciasev.ubdd_service.service.status.AdmStatusDictionaryService;
 
 import java.time.LocalDateTime;
 import java.util.EnumMap;
@@ -47,11 +55,16 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
     protected final CompensationActionService compensationService;
     protected final ExecutionCallbackService executionCallbackService;
     protected final InvoiceService invoiceService;
+    protected final InvoiceRepository invoiceRepository;
     protected final DecisionService decisionService;
     protected final CourtPaymentService courtService;
     protected final PublicApiWebhookEventPopulationService publicApiWebhookEventPopulationService;
     protected final BillingEntityService billingEntityService;
     protected final PaymentRepository paymentRepository;
+    protected final AdmCaseStatusService admCaseStatusService;
+    protected final AdmStatusDictionaryService admStatusDictionaryService;
+    protected final ResolutionService resolutionService;
+
 
 
     {
@@ -61,7 +74,21 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
     }
 
     @Override
-    @Transactional(timeout = 60)
+    @Transactional
+    public void calculateAndSetExecution(BillingEntity billingEntity) {
+        BillingData billingData = billingEntityService.getBillingData(billingEntity);
+
+        Optional<LocalDateTime> lastPaymentTimeOpt = billingData.getLastPayTime();
+        Long paidAmount = billingData.getTotalAmount().orElse(0L);
+
+        billingEntity.setLastPayTime(lastPaymentTimeOpt.orElse(null));
+        billingEntity.setPaidAmount(paidAmount);
+
+        executionMap.get(billingEntity.getInvoiceOwnerTypeAlias()).accept(billingEntity, billingData.getExecutorNames());
+    }
+
+    @Override
+    @Transactional
     public void handlePayment(User user, BillingPaymentDTO paymentDTO) {
 
         if (paymentDTO.getId() == null) {
@@ -77,27 +104,39 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
         Payment savedPayment = paymentService.save(invoice, paymentDTO);
 
         PenaltyPunishment penaltyPunishment = penaltyPunishmentRepository
-                    .findPenaltyPunishmentIdByExternalIdAndOrganId(paymentDTO.getExternalId() + "", user.getOrganId())
-                            .orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "externalId", paymentDTO.getExternalId(), "organId", user.getOrganId()));
+                .findPenaltyPunishmentIdByExternalIdAndOrganId(paymentDTO.getExternalId() + "", user.getOrganId())
+                .orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "externalId", paymentDTO.getExternalId(), "organId", user.getOrganId()));
 
-            penaltyPunishment.setPaidAmount(penaltyPunishment.getPaidAmount() + savedPayment.getAmount());
-            penaltyPunishment.setLastPayTime(paymentDTO.getPaidAt());
+        penaltyPunishment.setPaidAmount(penaltyPunishment.getPaidAmount() + savedPayment.getAmount());
+        penaltyPunishment.setLastPayTime(paymentDTO.getPaidAt());
+
+        Resolution resolution = invoiceRepository.findResolutionByInvoiceInPenaltyPunishment(invoice).orElseThrow(
+                () -> new EntityByParamsNotFound(Resolution.class, "invoice", invoice, "penaltyPunishment", penaltyPunishment)
+        );
+
+        AdmStatus admStatus = admStatusDictionaryService.findByAlias(AdmStatusAlias.EXECUTED);
+
+        resolutionService.updateStatus(resolution, admStatus, null);
+
+        Decision decision = invoiceRepository.findDecisionByInvoiceInCompensation(invoice).orElseThrow(
+                () -> new EntityByParamsNotFound(Decision.class, "invoice", invoice, "penaltyPunishment", penaltyPunishment)
+        );
+
+        decision.setStatus(admStatus);
+
+        Punishment punishment = invoiceRepository.findPunishmentByInvoiceInPenaltyPunishment(invoice).orElseThrow(
+                () -> new EntityByParamsNotFound(Punishment.class, "invoice", invoice, "penaltyPunishment", penaltyPunishment)
+        );
+
+        punishment.setStatus(admStatus);
+
+        AdmCase admCase = invoiceRepository.findAdmCaseByInvoiceInPenaltyPunishment(invoice).orElseThrow(
+                () -> new EntityByParamsNotFound(AdmCase.class, "invoice", invoice, "penaltyPunishment", penaltyPunishment)
+        );
+
+        admCaseStatusService.setStatusAndSave(admCase, AdmStatusAlias.EXECUTED);
 
         courtService.acceptIfCourt(invoice, savedPayment);
-    }
-
-    @Override
-    @Transactional
-    public void calculateAndSetExecution(BillingEntity billingEntity) {
-        BillingData billingData = billingEntityService.getBillingData(billingEntity);
-
-        Optional<LocalDateTime> lastPaymentTimeOpt = billingData.getLastPayTime();
-        Long paidAmount = billingData.getTotalAmount().orElse(0L);
-
-        billingEntity.setLastPayTime(lastPaymentTimeOpt.orElse(null));
-        billingEntity.setPaidAmount(paidAmount);
-
-        executionMap.get(billingEntity.getInvoiceOwnerTypeAlias()).accept(billingEntity, billingData.getExecutorNames());
     }
 
 

@@ -33,4 +33,7 @@ public class ResolutionCreateRequest {
     private String courtDecisionUri;
 
     private String considerUserInfo;
+    private String inspectorPosition;
+    private String inspectorRank;
+    private String inspectorWorkCertificate;
 }

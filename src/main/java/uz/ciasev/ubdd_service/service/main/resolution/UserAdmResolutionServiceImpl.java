@@ -2,54 +2,37 @@ package uz.ciasev.ubdd_service.service.main.resolution;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import uz.ciasev.ubdd_service.dto.internal.request.resolution.organ.SimplifiedResolutionRequestDTO;
-import uz.ciasev.ubdd_service.dto.internal.request.resolution.organ.SimplifiedSingleResolutionRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.organ.SingleResolutionRequestDTO;
 import uz.ciasev.ubdd_service.entity.Place;
 import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
-import uz.ciasev.ubdd_service.entity.dict.*;
-import uz.ciasev.ubdd_service.entity.dict.article.ArticlePart;
+import uz.ciasev.ubdd_service.entity.dict.Department;
+import uz.ciasev.ubdd_service.entity.dict.District;
+import uz.ciasev.ubdd_service.entity.dict.Organ;
+import uz.ciasev.ubdd_service.entity.dict.Region;
+import uz.ciasev.ubdd_service.entity.dict.user.Rank;
 import uz.ciasev.ubdd_service.entity.protocol.Protocol;
-import uz.ciasev.ubdd_service.entity.resolution.compensation.Compensation;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
-import uz.ciasev.ubdd_service.entity.resolution.punishment.PenaltyPunishment;
-import uz.ciasev.ubdd_service.entity.settings.OrganAccountSettings;
 import uz.ciasev.ubdd_service.entity.signature.SignatureEvent;
 import uz.ciasev.ubdd_service.entity.user.User;
 import uz.ciasev.ubdd_service.entity.violator.Violator;
 import uz.ciasev.ubdd_service.event.AdmEventService;
 import uz.ciasev.ubdd_service.event.AdmEventType;
-import uz.ciasev.ubdd_service.service.admcase.AdmCaseAccessService;
 import uz.ciasev.ubdd_service.service.admcase.AdmCaseService;
 import uz.ciasev.ubdd_service.service.aop.signature.DigitalSignatureCheck;
-import uz.ciasev.ubdd_service.service.execution.BillingExecutionService;
+import uz.ciasev.ubdd_service.service.dict.user.PositionDictionaryService;
+import uz.ciasev.ubdd_service.service.dict.user.RankDictionaryService;
 import uz.ciasev.ubdd_service.service.generator.DecisionNumberGeneratorService;
 import uz.ciasev.ubdd_service.service.generator.ResolutionNumberGeneratorService;
-import uz.ciasev.ubdd_service.service.invoice.InvoiceActionService;
-import uz.ciasev.ubdd_service.service.main.admcase.CalculatingService;
 import uz.ciasev.ubdd_service.service.main.resolution.dto.CreatedDecisionDTO;
 import uz.ciasev.ubdd_service.service.main.resolution.dto.CreatedSingleResolutionDTO;
 import uz.ciasev.ubdd_service.service.protocol.ProtocolService;
-import uz.ciasev.ubdd_service.service.protocol.RepeatabilityService;
 import uz.ciasev.ubdd_service.service.resolution.ResolutionCreateRequest;
 import uz.ciasev.ubdd_service.service.resolution.ResolutionService;
 import uz.ciasev.ubdd_service.service.resolution.compensation.CompensationService;
-import uz.ciasev.ubdd_service.service.resolution.punishment.PunishmentService;
-import uz.ciasev.ubdd_service.service.settings.AccountCalculatingService;
-import uz.ciasev.ubdd_service.service.validation.ResolutionValidationService;
-import uz.ciasev.ubdd_service.service.validation.ValidationService;
 import uz.ciasev.ubdd_service.service.violator.ViolatorService;
 
-import javax.annotation.Nullable;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static uz.ciasev.ubdd_service.entity.action.ActionAlias.CREATE_RESOLUTION;
-import static uz.ciasev.ubdd_service.entity.action.ActionAlias.CREATE_SIMPLIFIED_RESOLUTION;
 
 @Service
 @RequiredArgsConstructor
@@ -57,17 +40,15 @@ public class UserAdmResolutionServiceImpl implements UserAdmResolutionService {
 
     private final AdmCaseService admCaseService;
     private final ViolatorService violatorService;
-    private final CalculatingService calculatingService;
-    private final ResolutionValidationService resolutionValidationService;
     private final AdmEventService notificatorService;
     private final ResolutionHelpService helpService;
     private final ResolutionNumberGeneratorService resolutionNumberGeneratorService;
     private final DecisionNumberGeneratorService decisionNumberGeneratorService;
-    private final RepeatabilityService repeatabilityService;
-    private final DiscountService discountService;
     private final ResolutionService resolutionService;
     private final CompensationService compensationService;
     private final ProtocolService protocolService;
+    private final RankDictionaryService rankDictionaryService;
+    private final PositionDictionaryService positionDictionaryService;
 
 
 
@@ -98,10 +79,20 @@ public class UserAdmResolutionServiceImpl implements UserAdmResolutionService {
         Place resolutionPlace = calculateResolutionPlace(user, requestDTO);
 
         ResolutionCreateRequest resolution = helpService.buildResolution(requestDTO);
+
+
+        positionDictionaryService.findById(requestDTO.getInspectorPositionId()).ifPresent(
+                position -> resolution.setInspectorPosition(position.getDefaultName())
+        );
+
+        rankDictionaryService.findById(requestDTO.getInspectorRankId()).ifPresent(
+                rank -> resolution.setInspectorRank(rank.getDefaultName())
+        );
+
         Decision decision = helpService.buildDecision(violator, requestDTO, null /*penaltyBankAccountSettingsSupplier*/);
 
         admCase.setConsiderUser(user);
-        admCase.setConsiderInfo(user.getInfo());
+        admCase.setConsiderInfo(requestDTO.getConsiderUserInfo());
 
         CreatedSingleResolutionDTO data = helpService.resolve(admCase, user, resolutionPlace, resolutionNumberGeneratorService, decisionNumberGeneratorService, resolution, decision);
 

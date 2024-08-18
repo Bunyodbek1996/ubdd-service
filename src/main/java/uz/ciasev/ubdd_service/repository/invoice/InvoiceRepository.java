@@ -7,7 +7,9 @@ import org.springframework.data.repository.query.Param;
 import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
 import uz.ciasev.ubdd_service.entity.dict.Organ;
 import uz.ciasev.ubdd_service.entity.invoice.Invoice;
+import uz.ciasev.ubdd_service.entity.resolution.Resolution;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
+import uz.ciasev.ubdd_service.entity.resolution.punishment.Punishment;
 import uz.ciasev.ubdd_service.entity.violator.Violator;
 
 import java.util.Collection;
@@ -34,6 +36,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     @Query("SELECT i.penaltyPunishment.punishment.decision.resolution.admCase FROM Invoice i WHERE i = :invoice")
     Optional<AdmCase> findAdmCaseByInvoiceInPenaltyPunishment(@Param("invoice") Invoice invoice);
+
+    @Query("SELECT i.penaltyPunishment.punishment.decision.resolution FROM Invoice i WHERE i = :invoice")
+    Optional<Resolution> findResolutionByInvoiceInPenaltyPunishment(@Param("invoice") Invoice invoice);
+
+    @Query("SELECT i.penaltyPunishment.punishment FROM Invoice i WHERE i = :invoice")
+    Optional<Punishment> findPunishmentByInvoiceInPenaltyPunishment(@Param("invoice") Invoice invoice);
 
     @Query("SELECT i.compensation.decision.resolution.admCase FROM Invoice i WHERE i = :invoice")
     Optional<AdmCase> findAdmCaseByInvoiceInCompensation(@Param("invoice") Invoice invoice);

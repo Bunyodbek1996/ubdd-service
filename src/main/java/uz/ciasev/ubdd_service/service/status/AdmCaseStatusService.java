@@ -23,7 +23,6 @@ public class AdmCaseStatusService {
 
     @Transactional
     public AdmCase setStatus(AdmCase admCase, AdmStatusAlias statusAlias) {
-        // TODO: 08.11.2023  
         admCase.setStatus(admStatusDictionaryService.findByAlias(statusAlias));
         admEventService.fireEvent(AdmEventType.ADM_CASE_STATUS_CHANGE, admCase);
         return admCase;

@@ -130,6 +130,15 @@ public class Resolution implements AdmEntity, Place, Serializable {
     @Column(updatable = false)
     private String courtDecisionUri;
 
+    @Getter
+    private String inspectorWorkCertificate;
+
+    @Getter
+    private String inspectorPosition;
+
+    @Getter
+    private String inspectorRank;
+
 
     // УДОБНЫЕ ПОЛЯ
 
@@ -166,7 +175,12 @@ public class Resolution implements AdmEntity, Place, Serializable {
         this.series = request.getSeries();
         this.number = request.getNumber();
         this.user = request.getUser();
+
         this.considerInfo = request.getConsiderUserInfo();
+        this.inspectorPosition = request.getInspectorPosition();
+        this.inspectorRank = request.getInspectorRank();
+        this.inspectorWorkCertificate = request.getInspectorWorkCertificate();
+
         this.considerSignature = request.getConsiderSignature();
         this.organ = request.getOrgan();
         this.department = request.getDepartment();
