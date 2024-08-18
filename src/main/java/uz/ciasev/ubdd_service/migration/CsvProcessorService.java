@@ -307,6 +307,7 @@ public class CsvProcessorService {
         try {
             billingExecutionService.handlePayment(user, paymentDTO);
         } catch (Exception e) {
+            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION PAYMENT FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
