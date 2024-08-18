@@ -120,7 +120,7 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
 
         resolutionService.updateStatus(resolution, admStatus, null);
 
-        Decision decision = invoiceRepository.findDecisionByInvoiceInCompensation(invoice).orElseThrow(
+        Decision decision = invoiceRepository.findDecisionByInvoiceInPenaltyPunishment(invoice).orElseThrow(
                 () -> new EntityByParamsNotFound(Decision.class, "invoice", invoice, "penaltyPunishment", penaltyPunishment)
         );
 
