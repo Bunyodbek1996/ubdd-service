@@ -20,9 +20,11 @@ public class ViolatorCreateRequestDTO extends ViolatorRequestDTO implements Acto
     private String pinpp;
 
     @Valid
+    @NotNull(message = "person is required")
     private PersonRequestDTO person;
 
     @Valid
+    @NotNull(message = "document is required")
     private PersonDocumentRequestDTO document;
 
     @Valid

@@ -84,6 +84,7 @@ public class PersonRequestDTO {
         person.setCitizenshipType(this.citizenshipType);
         person.setGender(this.gender);
         person.setNationality(this.nationality);
+        person.setRealPinpp(true);
 
         return person;
     }

@@ -21,15 +21,12 @@ import javax.validation.constraints.Size;
 public class AddressRequestDTO implements GeographyRequest {
 
     @NotNull(message = ErrorCode.ADDRESS_COUNTRY_REQUIRED)
-    @ActiveOnly(message = ErrorCode.ADDRESS_COUNTRY_DEACTIVATED)
     @JsonProperty(value = "countryId")
     private Country country;
 
-    @ActiveOnly(message = ErrorCode.ADDRESS_REGION_DEACTIVATED)
     @JsonProperty(value = "regionId")
     private Region region;
 
-    @ActiveOnly(message = ErrorCode.ADDRESS_DISTRICT_DEACTIVATED)
     @JsonProperty(value = "districtId")
     private District district;
 

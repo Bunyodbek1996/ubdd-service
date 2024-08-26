@@ -36,9 +36,7 @@ public class PersonDocumentRequestDTO implements PersonDocument {
     private String number;
 
     @NotNull(message = ErrorCode.DOCUMENT_TYPE_REQUIRED)
-    //  Проверка заменена (см. ActorsValidator), что бы фронт мог единообразно слать документы найденые во всех сервисах, включая ГЦП
-    //  @ActiveOnly(message = ErrorCode.DOCUMENT_TYPE_DEACTIVATED)
-    @JsonProperty(value = "personDocumentTypeId")
+    @JsonProperty(value = "documentTypeId")
     private PersonDocumentType personDocumentType;
 
     @Valid

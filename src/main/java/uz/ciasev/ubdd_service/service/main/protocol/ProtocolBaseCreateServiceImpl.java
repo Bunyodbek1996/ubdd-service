@@ -9,8 +9,11 @@ import uz.ciasev.ubdd_service.entity.dict.District;
 import uz.ciasev.ubdd_service.entity.dict.Region;
 import uz.ciasev.ubdd_service.entity.dict.article.Article;
 import uz.ciasev.ubdd_service.entity.dict.article.ArticlePart;
+import uz.ciasev.ubdd_service.entity.dict.person.CitizenshipType;
+import uz.ciasev.ubdd_service.entity.dict.person.CitizenshipTypeAlias;
 import uz.ciasev.ubdd_service.entity.dict.user.Position;
 import uz.ciasev.ubdd_service.entity.dict.user.Rank;
+import uz.ciasev.ubdd_service.exception.NotFoundException;
 import uz.ciasev.ubdd_service.mvd_core.api.f1.service.F1Service;
 import uz.ciasev.ubdd_service.dto.internal.request.protocol.*;
 import uz.ciasev.ubdd_service.dto.internal.request.violator.ViolatorCreateRequestDTO;
@@ -27,10 +30,13 @@ import uz.ciasev.ubdd_service.entity.violator.ViolatorDetail;
 import uz.ciasev.ubdd_service.event.AdmEventService;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticlePartRepository;
 import uz.ciasev.ubdd_service.service.damage.DamageMainService;
+import uz.ciasev.ubdd_service.service.dict.person.CitizenshipTypeDictionaryService;
 import uz.ciasev.ubdd_service.service.history.HistoryService;
 import uz.ciasev.ubdd_service.service.juridic.JuridicService;
 import uz.ciasev.ubdd_service.service.main.ActorService;
+import uz.ciasev.ubdd_service.service.main.CitizenshipTypeCalculatingService;
 import uz.ciasev.ubdd_service.service.main.PersonDataService;
+import uz.ciasev.ubdd_service.service.person.PersonService;
 import uz.ciasev.ubdd_service.service.protocol.ProtocolCreateRequest;
 import uz.ciasev.ubdd_service.service.protocol.ProtocolService;
 import uz.ciasev.ubdd_service.service.protocol.RepeatabilityService;
@@ -61,6 +67,8 @@ public class ProtocolBaseCreateServiceImpl implements ProtocolBaseCreateService 
     private final ProtocolAdditionalService additionalService;
     private final UbddDataToProtocolBindService ubddDataToProtocolBindService;
     private final UbddOldStructureService ubddOldStructureService;
+    private final PersonService personService;
+    private final CitizenshipTypeDictionaryService citizenshipService;
 
     @Override
     @Transactional
@@ -82,7 +90,14 @@ public class ProtocolBaseCreateServiceImpl implements ProtocolBaseCreateService 
         }
 
         ViolatorCreateRequestDTO violatorRequestDTO = protocolDTO.getViolator();
-        Pair<Person, ? extends PersonDocument> personWithDocument = personDataService.provideByPinppOrManualDocument(violatorRequestDTO);
+//        Pair<Person, ? extends PersonDocument> personWithDocument = personDataService.provideByPinppOrManualDocument(violatorRequestDTO);
+
+        Person person = violatorRequestDTO.getPerson().buildPerson();
+        person.setPinpp(violatorRequestDTO.getPinpp());
+        var savedPerson = personService.findOrSave(person);
+
+        Pair<Person, ? extends PersonDocument> personWithDocument
+                = Pair.of(savedPerson, violatorRequestDTO.getDocument());
 
         AdmCase admCase = admCaseSupplier.get();
 

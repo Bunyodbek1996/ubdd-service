@@ -8,6 +8,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ciasev.ubdd_service.dto.internal.request.AddressRequestDTO;
+import uz.ciasev.ubdd_service.dto.internal.request.PersonDocumentRequestDTO;
+import uz.ciasev.ubdd_service.dto.internal.request.PersonRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.protocol.ProtocolRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.organ.OrganPunishmentRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.organ.SingleResolutionRequestDTO;
@@ -18,7 +20,7 @@ import uz.ciasev.ubdd_service.entity.dict.*;
 import uz.ciasev.ubdd_service.entity.dict.article.Article;
 import uz.ciasev.ubdd_service.entity.dict.article.ArticlePart;
 import uz.ciasev.ubdd_service.entity.dict.article.ArticleViolationType;
-import uz.ciasev.ubdd_service.entity.dict.person.Occupation;
+import uz.ciasev.ubdd_service.entity.dict.person.*;
 import uz.ciasev.ubdd_service.entity.dict.resolution.DecisionTypeAlias;
 import uz.ciasev.ubdd_service.entity.dict.resolution.PunishmentType;
 import uz.ciasev.ubdd_service.entity.user.User;
@@ -30,7 +32,7 @@ import uz.ciasev.ubdd_service.repository.dict.*;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticlePartRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleViolationTypeRepository;
-import uz.ciasev.ubdd_service.repository.dict.person.OccupationRepository;
+import uz.ciasev.ubdd_service.repository.dict.person.*;
 import uz.ciasev.ubdd_service.repository.dict.resolution.PunishmentTypeRepository;
 import uz.ciasev.ubdd_service.repository.user.UserRepository;
 import uz.ciasev.ubdd_service.service.execution.BillingExecutionService;
@@ -40,7 +42,6 @@ import uz.ciasev.ubdd_service.service.main.resolution.UserAdmResolutionService;
 import uz.ciasev.ubdd_service.service.protocol.ProtocolDTOService;
 import uz.ciasev.ubdd_service.service.resolution.decision.DecisionDTOService;
 
-import javax.validation.ConstraintViolation;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -48,7 +49,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +58,6 @@ public class CsvProcessorService {
     private static final DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final UserRepository userRepository;
-    private final ProtocolValidator protocolValidator;
     private final ProtocolDTOService protocolDTOService;
     private final ProtocolCreateService protocolCreateService;
 
@@ -78,6 +77,10 @@ public class CsvProcessorService {
     private final DepartmentRepository departmentRepository;
     private final OccupationRepository occupationRepository;
     private final PunishmentTypeRepository punishmentTypeRepository;
+    private final CitizenshipTypeRepository citizenshipTypeRepository;
+    private final GenderRepository genderRepository;
+    private final NationalityRepository nationalityRepository;
+    private final PersonDocumentTypeRepository personDocumentTypeRepository;
 
     public void startProcess(String filePath) throws IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
@@ -93,7 +96,7 @@ public class CsvProcessorService {
                     .withSeparator(',')
                     .build();
 
-            int i=0;
+            int i = 0;
             for (ProtocolData row : csvToBean) {
                 try {
                     saveToDatabase(row);
@@ -155,39 +158,38 @@ public class CsvProcessorService {
 
     private Pair<String, String> saveProtocol(User user, ProtocolData protocolData) {
 
-        ProtocolRequestDTO protocolRequestDTO = new ProtocolRequestDTO();
-
-        protocolRequestDTO.setExternalId(protocolData.getProtocol_externalId());
-        protocolRequestDTO.setInspectorRegionId(protocolData.getProtocol_inspectorRegionId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorRegionId()));
-        protocolRequestDTO.setInspectorDistrictId(protocolData.getProtocol_inspectorDistrictId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorDistrictId()));
-        protocolRequestDTO.setInspectorPositionId(protocolData.getProtocol_inspectorPositionId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorPositionId()));
-        protocolRequestDTO.setInspectorRankId(protocolData.getProtocol_inspectorRankId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorRankId()));
-        protocolRequestDTO.setInspectorFio(protocolData.getProtocol_inspectorFio());
-        protocolRequestDTO.setInspectorInfo(protocolData.getProtocol_inspectorInfo());
-        protocolRequestDTO.setInspectorWorkCertificate(protocolData.getProtocol_inspectorWorkCertificate());
-        protocolRequestDTO.setRegistrationTime(strToLocalDateTime(protocolData.getProtocol_registrationTime()));
-        protocolRequestDTO.setViolationTime(strToLocalDateTime(protocolData.getProtocol_violationTime()));
-
-
-        protocolRequestDTO.setArticle(buildArticleOrNull(protocolData.getProtocol_articleId()));
-        protocolRequestDTO.setArticlePart(buildArticlePartOrNull(protocolData.getProtocol_articlePartId()));
-
-        protocolRequestDTO.setFabula(protocolData.getProtocol_fabula());
-
-        protocolRequestDTO.setRegion(buildRegionOrNull(protocolData.getProtocol_regionId()));
-        protocolRequestDTO.setDistrict(buildDistrictOrNull(protocolData.getProtocol_districtId()));
-        protocolRequestDTO.setMtp(buildMtpOrNull(protocolData.getProtocol_mtpId()));
-
-        protocolRequestDTO.setAddress(protocolData.getMbprotocol_address());
-        protocolRequestDTO.setIsFamiliarize(protocolData.getProtocol_isFamiliarize() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isFamiliarize()));
-        protocolRequestDTO.setIsAgree(protocolData.getProtocol_isAgree() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isAgree()));
-
-        protocolRequestDTO.setViolator(buildViolatorCreateRequestDTO(protocolData));
-
         try {
+            ProtocolRequestDTO protocolRequestDTO = new ProtocolRequestDTO();
+            protocolRequestDTO.setExternalId(protocolData.getProtocol_externalId());
+            protocolRequestDTO.setInspectorRegionId(protocolData.getProtocol_inspectorRegionId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorRegionId()));
+            protocolRequestDTO.setInspectorDistrictId(protocolData.getProtocol_inspectorDistrictId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorDistrictId()));
+            protocolRequestDTO.setInspectorPositionId(protocolData.getProtocol_inspectorPositionId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorPositionId()));
+            protocolRequestDTO.setInspectorRankId(protocolData.getProtocol_inspectorRankId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorRankId()));
+            protocolRequestDTO.setInspectorFio(protocolData.getProtocol_inspectorFio());
+            protocolRequestDTO.setInspectorInfo(protocolData.getProtocol_inspectorInfo());
+            protocolRequestDTO.setInspectorWorkCertificate(protocolData.getProtocol_inspectorWorkCertificate());
+            protocolRequestDTO.setRegistrationTime(strToLocalDateTime(protocolData.getProtocol_registrationTime()));
+            protocolRequestDTO.setViolationTime(strToLocalDateTime(protocolData.getProtocol_violationTime()));
+
+            protocolRequestDTO.setArticle(buildArticleOrNull(protocolData.getProtocol_articleId()));
+            protocolRequestDTO.setArticlePart(buildArticlePartOrNull(protocolData.getProtocol_articlePartId()));
+
+            protocolRequestDTO.setFabula(protocolData.getProtocol_fabula());
+
+            protocolRequestDTO.setRegion(buildRegionOrNull(protocolData.getProtocol_regionId()));
+            protocolRequestDTO.setDistrict(buildDistrictOrNull(protocolData.getProtocol_districtId()));
+            protocolRequestDTO.setMtp(buildMtpOrNull(protocolData.getProtocol_mtpId()));
+
+            protocolRequestDTO.setAddress(protocolData.getMbprotocol_address());
+            protocolRequestDTO.setIsFamiliarize(protocolData.getProtocol_isFamiliarize() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isFamiliarize()));
+            protocolRequestDTO.setIsAgree(protocolData.getProtocol_isAgree() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isAgree()));
+
+            protocolRequestDTO.setViolator(buildViolatorCreateRequestDTO(protocolData));
+
             protocolDTOService.buildDetailForCreateProtocol(user, () -> protocolCreateService.createElectronProtocol(user, protocolRequestDTO));
         } catch (Exception e) {
-            String pro = protocolRequestDTO.getExternalId() + " CREATION PROTOCOL FAILED WITH: ";
+            e.printStackTrace();
+            String pro = protocolData.getProtocol_externalId() + " CREATION PROTOCOL FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
 
@@ -196,46 +198,45 @@ public class CsvProcessorService {
 
     private Pair<String, String> saveResolution(User user, ProtocolData protocolData) {
 
-        SingleResolutionRequestDTO resolutionRequestDTO = new SingleResolutionRequestDTO();
-        resolutionRequestDTO.setExternalId(Long.parseLong(protocolData.getResolution_externalId()));
-        resolutionRequestDTO.setConsiderUserInfo(protocolData.getResolution_considerUserInfo());
-        resolutionRequestDTO.setInspectorPositionId(protocolData.getResolution_inspectorPositionId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorPositionId()));
-        resolutionRequestDTO.setInspectorRankId(protocolData.getResolution_inspectorRankId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorRankId()));
-        resolutionRequestDTO.setInspectorWorkCertificate(protocolData.getResolution_inspectorWorkCertificate());
-        resolutionRequestDTO.setResolutionTime(strToLocalDateTime(protocolData.getResolution_resolutionTime()));
-        resolutionRequestDTO.setIsArticle33(protocolData.getResolution_isArticle33() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle33()));
-        resolutionRequestDTO.setIsArticle34(protocolData.getResolution_isArticle34() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle34()));
-        resolutionRequestDTO.setDepartment(buildDepartmentOrNull(protocolData.getResolution_departmentId()));
-        resolutionRequestDTO.setRegion(buildRegionOrNull(protocolData.getResolution_regionId()));
-        resolutionRequestDTO.setDistrict(buildDistrictOrNull(protocolData.getResolution_districtId()));
-        resolutionRequestDTO.setSignature(protocolData.getResolution_signature());
-        resolutionRequestDTO.setDecisionType(DecisionTypeAlias.getInstanceById(protocolData.getResolution_decisionTypeId() == null ? null : Long.parseLong(protocolData.getResolution_decisionTypeId())));
-
-        resolutionRequestDTO.setArticle(buildArticleOrNull(protocolData.getResolution_articleId()));
-        resolutionRequestDTO.setArticlePart(buildArticlePartOrNull(protocolData.getResolution_articlePartId()));
-        resolutionRequestDTO.setArticleViolationType(buildArticleViolationTypeOrNull(protocolData.getResolution_articleViolationTypeId()));
-        resolutionRequestDTO.setExecutionFromDate(strToLocalDate(protocolData.getResolution_executionFromDate()));
-
-        OrganPunishmentRequestDTO mainPunishment = new OrganPunishmentRequestDTO();
-        mainPunishment.setPunishmentType(buildPunishmentTypeOrNull(protocolData.getResolution_mainPunishment_punishmentTypeId()));
-        mainPunishment.setAmount(protocolData.getResolution_mainPunishment_amount() == null ? null : Long.parseLong(protocolData.getResolution_mainPunishment_amount()));
-
-        mainPunishment.setIsDiscount70(protocolData.getInovice_isDiscount70() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount70()));
-        mainPunishment.setIsDiscount50(protocolData.getInovice_isDiscount50() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount50()));
-
-        mainPunishment.setDiscount70ForDate(strToLocalDate(protocolData.getInovice_discount70ForDate()));
-        mainPunishment.setDiscount50ForDate(strToLocalDate(protocolData.getInovice_discount50ForDate()));
-
-        mainPunishment.setDiscount70Amount(protocolData.getInovice_discount70Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount70Amount()));
-        mainPunishment.setDiscount50Amount(protocolData.getInovice_discount50Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount50Amount()));
-
-
-        resolutionRequestDTO.setMainPunishment(mainPunishment);
-
-
         try {
+            SingleResolutionRequestDTO resolutionRequestDTO = new SingleResolutionRequestDTO();
+            resolutionRequestDTO.setExternalId(Long.parseLong(protocolData.getResolution_externalId()));
+            resolutionRequestDTO.setConsiderUserInfo(protocolData.getResolution_considerUserInfo());
+            resolutionRequestDTO.setInspectorPositionId(protocolData.getResolution_inspectorPositionId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorPositionId()));
+            resolutionRequestDTO.setInspectorRankId(protocolData.getResolution_inspectorRankId() == null ? -1 : Long.parseLong(protocolData.getResolution_inspectorRankId()));
+            resolutionRequestDTO.setInspectorWorkCertificate(protocolData.getResolution_inspectorWorkCertificate());
+            resolutionRequestDTO.setResolutionTime(strToLocalDateTime(protocolData.getResolution_resolutionTime()));
+            resolutionRequestDTO.setIsArticle33(protocolData.getResolution_isArticle33() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle33()));
+            resolutionRequestDTO.setIsArticle34(protocolData.getResolution_isArticle34() == null ? null : Boolean.parseBoolean(protocolData.getResolution_isArticle34()));
+            resolutionRequestDTO.setDepartment(buildDepartmentOrNull(protocolData.getResolution_departmentId()));
+            resolutionRequestDTO.setRegion(buildRegionOrNull(protocolData.getResolution_regionId()));
+            resolutionRequestDTO.setDistrict(buildDistrictOrNull(protocolData.getResolution_districtId()));
+            resolutionRequestDTO.setSignature(protocolData.getResolution_signature());
+            resolutionRequestDTO.setDecisionType(DecisionTypeAlias.getInstanceById(protocolData.getResolution_decisionTypeId() == null ? null : Long.parseLong(protocolData.getResolution_decisionTypeId())));
+
+            resolutionRequestDTO.setArticle(buildArticleOrNull(protocolData.getResolution_articleId()));
+            resolutionRequestDTO.setArticlePart(buildArticlePartOrNull(protocolData.getResolution_articlePartId()));
+            resolutionRequestDTO.setArticleViolationType(buildArticleViolationTypeOrNull(protocolData.getResolution_articleViolationTypeId()));
+            resolutionRequestDTO.setExecutionFromDate(strToLocalDate(protocolData.getResolution_executionFromDate()));
+
+            OrganPunishmentRequestDTO mainPunishment = new OrganPunishmentRequestDTO();
+            mainPunishment.setPunishmentType(buildPunishmentTypeOrNull(protocolData.getResolution_mainPunishment_punishmentTypeId()));
+            mainPunishment.setAmount(protocolData.getResolution_mainPunishment_amount() == null ? null : Long.parseLong(protocolData.getResolution_mainPunishment_amount()));
+
+            mainPunishment.setIsDiscount70(protocolData.getInovice_isDiscount70() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount70()));
+            mainPunishment.setIsDiscount50(protocolData.getInovice_isDiscount50() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount50()));
+
+            mainPunishment.setDiscount70ForDate(strToLocalDate(protocolData.getInovice_discount70ForDate()));
+            mainPunishment.setDiscount50ForDate(strToLocalDate(protocolData.getInovice_discount50ForDate()));
+
+            mainPunishment.setDiscount70Amount(protocolData.getInovice_discount70Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount70Amount()));
+            mainPunishment.setDiscount50Amount(protocolData.getInovice_discount50Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount50Amount()));
+
+            resolutionRequestDTO.setMainPunishment(mainPunishment);
+
             decisionDTOService.buildListForCreate(() -> admResolutionService.createSingle(user, resolutionRequestDTO.getExternalId(), resolutionRequestDTO).getCreatedDecision());
         } catch (Exception e) {
+            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION RESOLUTION FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -246,31 +247,32 @@ public class CsvProcessorService {
 
     private Pair<String, String> saveInvoice(User user, ProtocolData protocolData) {
 
-        UbddInvoiceRequest invoiceRequest = new UbddInvoiceRequest();
-        invoiceRequest.setIsDiscount70(protocolData.getInovice_isDiscount70() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount70()));
-        invoiceRequest.setIsDiscount50(protocolData.getInovice_isDiscount50() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount50()));
-        invoiceRequest.setExternalId(protocolData.getInovice_externalId() == null ? null : Long.parseLong(protocolData.getInovice_externalId()));
-        invoiceRequest.setInvoiceId(protocolData.getInovice_invoiceId() == null ? null : Long.parseLong(protocolData.getInovice_invoiceId()));
-        invoiceRequest.setInvoiceSerial(protocolData.getInovice_invoiceSerial());
-        invoiceRequest.setInvoiceNumber(protocolData.getInovice_invoiceNumber());
-        invoiceRequest.setInvoiceDate(strToLocalDate(protocolData.getInovice_invoiceDate()));
-        invoiceRequest.setDiscount70ForDate(strToLocalDate(protocolData.getInovice_discount70ForDate()));
-        invoiceRequest.setDiscount50ForDate(strToLocalDate(protocolData.getInovice_discount50ForDate()));
-        invoiceRequest.setPenaltyPunishmentAmount(protocolData.getInovice_penaltyPunishmentAmount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_penaltyPunishmentAmount()));
-        invoiceRequest.setDiscount70Amount(protocolData.getInovice_discount70Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount70Amount()));
-        invoiceRequest.setDiscount50Amount(protocolData.getInovice_discount50Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount50Amount()));
-        invoiceRequest.setOrganName(protocolData.getInovice_organName());
-        invoiceRequest.setBankInn(protocolData.getInovice_bankInn());
-        invoiceRequest.setBankName(protocolData.getInovice_bankName());
-        invoiceRequest.setBankCode(protocolData.getInovice_bankCode());
-        invoiceRequest.setBankAccount(protocolData.getInovice_bankAccount());
-        invoiceRequest.setPayerName(protocolData.getInovice_payerName());
-        invoiceRequest.setPayerAddress(protocolData.getInovice_payerAddress());
-        invoiceRequest.setPayerBirthdate(strToLocalDate(protocolData.getInovice_payerBirthdate()));
-
         try {
+            UbddInvoiceRequest invoiceRequest = new UbddInvoiceRequest();
+            invoiceRequest.setIsDiscount70(protocolData.getInovice_isDiscount70() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount70()));
+            invoiceRequest.setIsDiscount50(protocolData.getInovice_isDiscount50() == null ? null : Boolean.parseBoolean(protocolData.getInovice_isDiscount50()));
+            invoiceRequest.setExternalId(protocolData.getInovice_externalId() == null ? null : Long.parseLong(protocolData.getInovice_externalId()));
+            invoiceRequest.setInvoiceId(protocolData.getInovice_invoiceId() == null ? null : Long.parseLong(protocolData.getInovice_invoiceId()));
+            invoiceRequest.setInvoiceSerial(protocolData.getInovice_invoiceSerial());
+            invoiceRequest.setInvoiceNumber(protocolData.getInovice_invoiceNumber());
+            invoiceRequest.setInvoiceDate(strToLocalDate(protocolData.getInovice_invoiceDate()));
+            invoiceRequest.setDiscount70ForDate(strToLocalDate(protocolData.getInovice_discount70ForDate()));
+            invoiceRequest.setDiscount50ForDate(strToLocalDate(protocolData.getInovice_discount50ForDate()));
+            invoiceRequest.setPenaltyPunishmentAmount(protocolData.getInovice_penaltyPunishmentAmount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_penaltyPunishmentAmount()));
+            invoiceRequest.setDiscount70Amount(protocolData.getInovice_discount70Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount70Amount()));
+            invoiceRequest.setDiscount50Amount(protocolData.getInovice_discount50Amount() == null ? null : (long) Double.parseDouble(protocolData.getInovice_discount50Amount()));
+            invoiceRequest.setOrganName(protocolData.getInovice_organName());
+            invoiceRequest.setBankInn(protocolData.getInovice_bankInn());
+            invoiceRequest.setBankName(protocolData.getInovice_bankName());
+            invoiceRequest.setBankCode(protocolData.getInovice_bankCode());
+            invoiceRequest.setBankAccount(protocolData.getInovice_bankAccount());
+            invoiceRequest.setPayerName(protocolData.getInovice_payerName());
+            invoiceRequest.setPayerAddress(protocolData.getInovice_payerAddress());
+            invoiceRequest.setPayerBirthdate(strToLocalDate(protocolData.getInovice_payerBirthdate()));
+
             invoiceService.create(user, invoiceRequest);
         } catch (Exception e) {
+            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION INVOICE FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -281,30 +283,30 @@ public class CsvProcessorService {
 
     private Pair<String, String> savePayment(User user, ProtocolData protocolData) {
 
-        BillingPaymentDTO paymentDTO = new BillingPaymentDTO();
-        paymentDTO.setId(protocolData.getPayments_id() == null ? null : Long.parseLong(protocolData.getPayments_id()));
-        paymentDTO.setExternalId(protocolData.getPayments_externalId() == null ? null : Long.parseLong(protocolData.getPayments_externalId()));
-        paymentDTO.setInvoiceSerial(protocolData.getPayments_invoiceSerial());
-        paymentDTO.setBid(protocolData.getPayments_bid());
-        paymentDTO.setAmount(protocolData.getPayments_amount() == null ? null : Double.parseDouble(protocolData.getPayments_amount()));
-        paymentDTO.setDocNumber(protocolData.getPayments_docNumber());
-        paymentDTO.setPaidAt(strToLocalDateTime(protocolData.getPayments_paidAt()));
-
-        BillingPayerInfoDTO payerInfoDTO = new BillingPayerInfoDTO();
-        payerInfoDTO.setFromBankCode("0000");
-        payerInfoDTO.setFromBankAccount("0000");
-        payerInfoDTO.setFromBankName("Bank nomi ko'rsatilmagan");
-        payerInfoDTO.setFromInn("0000");
-        paymentDTO.setPayerInfo(payerInfoDTO);
-
-        BillingPayeeInfoDTO payeeInfoDTO = new BillingPayeeInfoDTO();
-        payeeInfoDTO.setToBankCode("0000");
-        payeeInfoDTO.setToBankAccount("0000");
-        payeeInfoDTO.setToBankName("Bank nomi ko'rsatilmagan");
-        payeeInfoDTO.setToInn("0000");
-        paymentDTO.setPayeeInfo(payeeInfoDTO);
-
         try {
+            BillingPaymentDTO paymentDTO = new BillingPaymentDTO();
+            paymentDTO.setId(protocolData.getPayments_id() == null ? null : Long.parseLong(protocolData.getPayments_id()));
+            paymentDTO.setExternalId(protocolData.getPayments_externalId() == null ? null : Long.parseLong(protocolData.getPayments_externalId()));
+            paymentDTO.setInvoiceSerial(protocolData.getPayments_invoiceSerial());
+            paymentDTO.setBid(protocolData.getPayments_bid());
+            paymentDTO.setAmount(protocolData.getPayments_amount() == null ? null : Double.parseDouble(protocolData.getPayments_amount()));
+            paymentDTO.setDocNumber(protocolData.getPayments_docNumber());
+            paymentDTO.setPaidAt(strToLocalDateTime(protocolData.getPayments_paidAt()));
+
+            BillingPayerInfoDTO payerInfoDTO = new BillingPayerInfoDTO();
+            payerInfoDTO.setFromBankCode("0000");
+            payerInfoDTO.setFromBankAccount("0000");
+            payerInfoDTO.setFromBankName("Bank nomi ko'rsatilmagan");
+            payerInfoDTO.setFromInn("0000");
+            paymentDTO.setPayerInfo(payerInfoDTO);
+
+            BillingPayeeInfoDTO payeeInfoDTO = new BillingPayeeInfoDTO();
+            payeeInfoDTO.setToBankCode("0000");
+            payeeInfoDTO.setToBankAccount("0000");
+            payeeInfoDTO.setToBankName("Bank nomi ko'rsatilmagan");
+            payeeInfoDTO.setToInn("0000");
+            paymentDTO.setPayeeInfo(payeeInfoDTO);
+
             billingExecutionService.handlePayment(user, paymentDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,6 +364,46 @@ public class CsvProcessorService {
         violatorDetail.setAdditionally(protocolData.getProtocol_violator_violatorDetail_additionally());
         violatorDetail.setSignature(protocolData.getProtocol_violator_violatorDetail_signature());
         violator.setViolatorDetail(violatorDetail);
+
+
+        PersonRequestDTO personRequestDTO = new PersonRequestDTO();
+        personRequestDTO.setFirstNameKir(protocolData.getProtocol_violator_person_firstNameKir());
+        personRequestDTO.setSecondNameKir(protocolData.getProtocol_violator_person_secondNameKir());
+        personRequestDTO.setLastNameKir(protocolData.getProtocol_violator_person_lastNameKir());
+        personRequestDTO.setFirstNameLat(protocolData.getProtocol_violator_person_firstNameLat());
+        personRequestDTO.setSecondNameLat(protocolData.getProtocol_violator_person_secondNameLat());
+        personRequestDTO.setLastNameLat(protocolData.getProtocol_violator_person_lastNameLat());
+        personRequestDTO.setBirthDate(strToLocalDate(protocolData.getProtocol_violator_person_birthDate()));
+
+        AddressRequestDTO birthAddress = new AddressRequestDTO();
+        birthAddress.setCountry(buildCountryOrNull(protocolData.getProtocol_violator_person_birthAddress_countryId()));
+        birthAddress.setRegion(buildRegionOrNull(protocolData.getProtocol_violator_person_birthAddress_regionId()));
+        birthAddress.setDistrict(buildDistrictOrNull(protocolData.getProtocol_violator_person_birthAddress_districtId()));
+        birthAddress.setAddress(protocolData.getProtocol_violator_person_birthAddress_address());
+        personRequestDTO.setBirthAddress(birthAddress);
+
+        personRequestDTO.setCitizenshipType(buildCitizenshipTypeOrNull(protocolData.getProtocol_violator_person_citizenshipTypeId()));
+        personRequestDTO.setGender(buildGenderOrNull(protocolData.getProtocol_violator_person_genderId()));
+        personRequestDTO.setNationality(buildNationalityOrNull(protocolData.getProtocol_violator_person_nationalityId()));
+
+        violator.setPerson(personRequestDTO);
+
+        PersonDocumentRequestDTO personDocumentRequestDTO = new PersonDocumentRequestDTO();
+
+        personDocumentRequestDTO.setSeries(protocolData.getProtocol_violator_personDocument_documentSeries());
+        personDocumentRequestDTO.setNumber(protocolData.getProtocol_violator_personDocument_documentNumber());
+        personDocumentRequestDTO.setPersonDocumentType(buildPersonDocumentTypeOrNull(protocolData.getProtocol_violator_personDocument_documentTypeId()));
+        personDocumentRequestDTO.setGivenDate(strToLocalDate(protocolData.getProtocol_violator_personDocument_documentGivenDate()));
+
+        AddressRequestDTO givenAddress = new AddressRequestDTO();
+        givenAddress.setCountry(buildCountryOrNull(protocolData.getProtocol_violator_personDocument_givenAddress_countryId()));
+        givenAddress.setRegion(buildRegionOrNull(protocolData.getProtocol_violator_personDocument_givenAddress_regionId()));
+        givenAddress.setDistrict(buildDistrictOrNull(protocolData.getProtocol_violator_personDocument_givenAddress_districtId()));
+        givenAddress.setAddress(protocolData.getProtocol_violator_personDocument_givenAddress_address());
+
+        personDocumentRequestDTO.setDocumentGivenAddress(givenAddress);
+
+        violator.setDocument(personDocumentRequestDTO);
 
         return violator;
     }
@@ -436,5 +478,32 @@ public class CsvProcessorService {
         );
     }
 
+    private CitizenshipType buildCitizenshipTypeOrNull(String id) {
+        if (id == null || id.isBlank()) return null;
+        return citizenshipTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(CitizenshipType.class, Long.parseLong(id))
+        );
+    }
+
+    private Gender buildGenderOrNull(String id) {
+        if (id == null || id.isBlank()) return null;
+        return genderRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(Gender.class, Long.parseLong(id))
+        );
+    }
+
+    private Nationality buildNationalityOrNull(String id) {
+        if (id == null || id.isBlank()) return null;
+        return nationalityRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(Nationality.class, Long.parseLong(id))
+        );
+    }
+
+    private PersonDocumentType buildPersonDocumentTypeOrNull(String id) {
+        if (id == null || id.isBlank()) return null;
+        return personDocumentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(PersonDocumentType.class, Long.parseLong(id))
+        );
+    }
 }
 

@@ -88,7 +88,20 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person buildFromF1(F1Document f1Document) {
-        Person person = f1Document.buildPerson();
+
+        Person person = new Person();
+
+        person.setPinpp(f1Document.getPinpp());
+        person.setFirstNameKir(f1Document.getFirstNameKir());
+        person.setSecondNameKir(f1Document.getSecondNameKir());
+        person.setLastNameKir(f1Document.getLastNameKir());
+        person.setFirstNameLat(f1Document.getFirstNameLat());
+        person.setSecondNameLat(f1Document.getSecondNameLat());
+        person.setLastNameLat(f1Document.getLastNameLat());
+        person.setBirthDate(f1Document.getBirthDate());
+        person.setBirthAddress(f1Document.getBirthAddress());
+        person.setGender(f1Document.getGender());
+        person.setNationality(f1Document.getNationality());
         person.setRealPinpp(true);
         person.setCitizenshipType(citizenshipTypeService.calculate(f1Document));
 

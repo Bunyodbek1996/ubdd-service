@@ -74,7 +74,6 @@ public class ActorServiceImpl implements ActorService {
     private final AdmCaseChangeReasonService admCaseChangeReasonService;
     private final ViolatorRepository violatorRepository;
     private final HistoryService historyService;
-    private final ViolatorAspectWorkerService violatorAspectWorkerService;
     private final LastEmploymentInfoService lastEmploymentInfoService;
 
     @Override
@@ -108,11 +107,6 @@ public class ActorServiceImpl implements ActorService {
         violatorDetail.setUser(user);
         violatorDetail.setViolator(violator);
         setDocumentData(person, document, violatorDetail, photoUri, protocol);
-
-        lastEmploymentInfoService.addLastEmploymentInfoToOwner(
-                user,
-                violatorDetail,
-                violatorRequestDTO.getViolatorDetail().getLastEmploymentInfo());
 
         ViolatorDetail savedViolatorDetail = violatorDetailRepository.saveAndFlush(violatorDetail);
 
@@ -325,11 +319,6 @@ public class ActorServiceImpl implements ActorService {
     }
 
     private void setDocumentData(Person person, PersonDocument document, ActorDetails violatorDetail, String photoUri,  AdmProtocol protocol) {
-
-        document.getExternalSystem().map(externalSystemService::getByAlias).ifPresent(violatorDetail::setExternalSystem);
-        document.getExternalId().ifPresent(violatorDetail::setExternalId);
-        document.getResidentAddress().map(addressService::save).ifPresent(violatorDetail::setF1Address);
-        document.getManzilAddress().map(addressService::save).ifPresent(violatorDetail::setResidenceAddress);
 
         AgeCategory ageCategory = ageCategoryService.getByBirthdate(true, person.getBirthDate(), protocol.getViolationTime());
         Address givenAddress = addressService.save(document.getGivenAddress());

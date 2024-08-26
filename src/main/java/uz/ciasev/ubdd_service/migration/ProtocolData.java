@@ -1,6 +1,5 @@
 package uz.ciasev.ubdd_service.migration;
 
-import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 
 public class ProtocolData {
@@ -109,6 +108,58 @@ public class ProtocolData {
 
     @CsvCustomBindByName(column = "protocol_violator_violatorDetail_signature", converter = NullValueConverter.class)
     private String protocol_violator_violatorDetail_signature;
+
+    @CsvCustomBindByName(column = "protocol_violator_person_firstNameKir", converter = NullValueConverter.class)
+    private String protocol_violator_person_firstNameKir;
+    @CsvCustomBindByName(column = "protocol_violator_person_secondNameKir", converter = NullValueConverter.class)
+    private String protocol_violator_person_secondNameKir;
+    @CsvCustomBindByName(column = "protocol_violator_person_lastNameKir", converter = NullValueConverter.class)
+    private String protocol_violator_person_lastNameKir;
+    @CsvCustomBindByName(column = "protocol_violator_person_firstNameLat", converter = NullValueConverter.class)
+    private String protocol_violator_person_firstNameLat;
+    @CsvCustomBindByName(column = "protocol_violator_person_secondNameLat", converter = NullValueConverter.class)
+    private String protocol_violator_person_secondNameLat;
+    @CsvCustomBindByName(column = "protocol_violator_person_lastNameLat", converter = NullValueConverter.class)
+    private String protocol_violator_person_lastNameLat;
+    @CsvCustomBindByName(column = "protocol_violator_person_birthDate", converter = NullValueConverter.class)
+    private String protocol_violator_person_birthDate;
+
+
+    @CsvCustomBindByName(column = "protocol_violator_person_birthAddress_countryId", converter = NullValueConverter.class)
+    private String protocol_violator_person_birthAddress_countryId;
+    @CsvCustomBindByName(column = "protocol_violator_person_birthAddress_regionId", converter = NullValueConverter.class)
+    private String protocol_violator_person_birthAddress_regionId;
+    @CsvCustomBindByName(column = "protocol_violator_person_birthAddress_districtId", converter = NullValueConverter.class)
+    private String protocol_violator_person_birthAddress_districtId;
+    @CsvCustomBindByName(column = "protocol_violator_person_birthAddress_address", converter = NullValueConverter.class)
+    private String protocol_violator_person_birthAddress_address;
+
+    @CsvCustomBindByName(column = "protocol_violator_person_citizenshipTypeId", converter = NullValueConverter.class)
+    private String protocol_violator_person_citizenshipTypeId;
+    @CsvCustomBindByName(column = "protocol_violator_person_genderId", converter = NullValueConverter.class)
+    private String protocol_violator_person_genderId;
+    @CsvCustomBindByName(column = "protocol_violator_person_nationalityId", converter = NullValueConverter.class)
+    private String protocol_violator_person_nationalityId;
+
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_documentSeries", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_documentSeries;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_documentNumber", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_documentNumber;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_documentTypeId", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_documentTypeId;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_documentGivenDate", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_documentGivenDate;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_documentExpireDate", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_documentExpireDate;
+
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_givenAddress_countryId", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_givenAddress_countryId;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_givenAddress_regionId", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_givenAddress_regionId;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_givenAddress_districtId", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_givenAddress_districtId;
+    @CsvCustomBindByName(column = "protocol_violator_personDocument_givenAddress_address", converter = NullValueConverter.class)
+    private String protocol_violator_personDocument_givenAddress_address;
 
     @CsvCustomBindByName(column = "resolution_externalId", converter = NullValueConverter.class)
     private String resolution_externalId;
@@ -553,12 +604,228 @@ public class ProtocolData {
         this.protocol_violator_violatorDetail_signature = protocol_violator_violatorDetail_signature;
     }
 
+    public String getProtocol_violator_person_firstNameKir() {
+        return protocol_violator_person_firstNameKir;
+    }
+
+    public void setProtocol_violator_person_firstNameKir(String protocol_violator_person_firstNameKir) {
+        this.protocol_violator_person_firstNameKir = protocol_violator_person_firstNameKir;
+    }
+
+    public String getProtocol_violator_person_secondNameKir() {
+        return protocol_violator_person_secondNameKir;
+    }
+
+    public void setProtocol_violator_person_secondNameKir(String protocol_violator_person_secondNameKir) {
+        this.protocol_violator_person_secondNameKir = protocol_violator_person_secondNameKir;
+    }
+
+    public String getProtocol_violator_person_lastNameKir() {
+        return protocol_violator_person_lastNameKir;
+    }
+
+    public void setProtocol_violator_person_lastNameKir(String protocol_violator_person_lastNameKir) {
+        this.protocol_violator_person_lastNameKir = protocol_violator_person_lastNameKir;
+    }
+
+    public String getProtocol_violator_person_firstNameLat() {
+        return protocol_violator_person_firstNameLat;
+    }
+
+    public void setProtocol_violator_person_firstNameLat(String protocol_violator_person_firstNameLat) {
+        this.protocol_violator_person_firstNameLat = protocol_violator_person_firstNameLat;
+    }
+
+    public String getProtocol_violator_person_secondNameLat() {
+        return protocol_violator_person_secondNameLat;
+    }
+
+    public void setProtocol_violator_person_secondNameLat(String protocol_violator_person_secondNameLat) {
+        this.protocol_violator_person_secondNameLat = protocol_violator_person_secondNameLat;
+    }
+
+    public String getProtocol_violator_person_lastNameLat() {
+        return protocol_violator_person_lastNameLat;
+    }
+
+    public void setProtocol_violator_person_lastNameLat(String protocol_violator_person_lastNameLat) {
+        this.protocol_violator_person_lastNameLat = protocol_violator_person_lastNameLat;
+    }
+
+    public String getProtocol_violator_person_birthDate() {
+        return protocol_violator_person_birthDate;
+    }
+
+    public void setProtocol_violator_person_birthDate(String protocol_violator_person_birthDate) {
+        this.protocol_violator_person_birthDate = protocol_violator_person_birthDate;
+    }
+
+    public String getProtocol_violator_person_birthAddress_countryId() {
+        return protocol_violator_person_birthAddress_countryId;
+    }
+
+    public void setProtocol_violator_person_birthAddress_countryId(String protocol_violator_person_birthAddress_countryId) {
+        this.protocol_violator_person_birthAddress_countryId = protocol_violator_person_birthAddress_countryId;
+    }
+
+    public String getProtocol_violator_person_birthAddress_regionId() {
+        return protocol_violator_person_birthAddress_regionId;
+    }
+
+    public void setProtocol_violator_person_birthAddress_regionId(String protocol_violator_person_birthAddress_regionId) {
+        this.protocol_violator_person_birthAddress_regionId = protocol_violator_person_birthAddress_regionId;
+    }
+
+    public String getProtocol_violator_person_birthAddress_districtId() {
+        return protocol_violator_person_birthAddress_districtId;
+    }
+
+    public void setProtocol_violator_person_birthAddress_districtId(String protocol_violator_person_birthAddress_districtId) {
+        this.protocol_violator_person_birthAddress_districtId = protocol_violator_person_birthAddress_districtId;
+    }
+
+    public String getProtocol_violator_person_birthAddress_address() {
+        return protocol_violator_person_birthAddress_address;
+    }
+
+    public void setProtocol_violator_person_birthAddress_address(String protocol_violator_person_birthAddress_address) {
+        this.protocol_violator_person_birthAddress_address = protocol_violator_person_birthAddress_address;
+    }
+
+    public String getProtocol_violator_person_citizenshipTypeId() {
+        return protocol_violator_person_citizenshipTypeId;
+    }
+
+    public void setProtocol_violator_person_citizenshipTypeId(String protocol_violator_person_citizenshipTypeId) {
+        this.protocol_violator_person_citizenshipTypeId = protocol_violator_person_citizenshipTypeId;
+    }
+
+    public String getProtocol_violator_person_genderId() {
+        return protocol_violator_person_genderId;
+    }
+
+    public void setProtocol_violator_person_genderId(String protocol_violator_person_genderId) {
+        this.protocol_violator_person_genderId = protocol_violator_person_genderId;
+    }
+
+    public String getProtocol_violator_person_nationalityId() {
+        return protocol_violator_person_nationalityId;
+    }
+
+    public void setProtocol_violator_person_nationalityId(String protocol_violator_person_nationalityId) {
+        this.protocol_violator_person_nationalityId = protocol_violator_person_nationalityId;
+    }
+
+    public String getProtocol_violator_personDocument_documentSeries() {
+        return protocol_violator_personDocument_documentSeries;
+    }
+
+    public void setProtocol_violator_personDocument_documentSeries(String protocol_violator_personDocument_documentSeries) {
+        this.protocol_violator_personDocument_documentSeries = protocol_violator_personDocument_documentSeries;
+    }
+
+    public String getProtocol_violator_personDocument_documentNumber() {
+        return protocol_violator_personDocument_documentNumber;
+    }
+
+    public void setProtocol_violator_personDocument_documentNumber(String protocol_violator_personDocument_documentNumber) {
+        this.protocol_violator_personDocument_documentNumber = protocol_violator_personDocument_documentNumber;
+    }
+
+    public String getProtocol_violator_personDocument_documentTypeId() {
+        return protocol_violator_personDocument_documentTypeId;
+    }
+
+    public void setProtocol_violator_personDocument_documentTypeId(String protocol_violator_personDocument_documentTypeId) {
+        this.protocol_violator_personDocument_documentTypeId = protocol_violator_personDocument_documentTypeId;
+    }
+
+    public String getProtocol_violator_personDocument_documentGivenDate() {
+        return protocol_violator_personDocument_documentGivenDate;
+    }
+
+    public void setProtocol_violator_personDocument_documentGivenDate(String protocol_violator_personDocument_documentGivenDate) {
+        this.protocol_violator_personDocument_documentGivenDate = protocol_violator_personDocument_documentGivenDate;
+    }
+
+    public String getProtocol_violator_personDocument_documentExpireDate() {
+        return protocol_violator_personDocument_documentExpireDate;
+    }
+
+    public void setProtocol_violator_personDocument_documentExpireDate(String protocol_violator_personDocument_documentExpireDate) {
+        this.protocol_violator_personDocument_documentExpireDate = protocol_violator_personDocument_documentExpireDate;
+    }
+
+    public String getProtocol_violator_personDocument_givenAddress_countryId() {
+        return protocol_violator_personDocument_givenAddress_countryId;
+    }
+
+    public void setProtocol_violator_personDocument_givenAddress_countryId(String protocol_violator_personDocument_givenAddress_countryId) {
+        this.protocol_violator_personDocument_givenAddress_countryId = protocol_violator_personDocument_givenAddress_countryId;
+    }
+
+    public String getProtocol_violator_personDocument_givenAddress_regionId() {
+        return protocol_violator_personDocument_givenAddress_regionId;
+    }
+
+    public void setProtocol_violator_personDocument_givenAddress_regionId(String protocol_violator_personDocument_givenAddress_regionId) {
+        this.protocol_violator_personDocument_givenAddress_regionId = protocol_violator_personDocument_givenAddress_regionId;
+    }
+
+    public String getProtocol_violator_personDocument_givenAddress_districtId() {
+        return protocol_violator_personDocument_givenAddress_districtId;
+    }
+
+    public void setProtocol_violator_personDocument_givenAddress_districtId(String protocol_violator_personDocument_givenAddress_districtId) {
+        this.protocol_violator_personDocument_givenAddress_districtId = protocol_violator_personDocument_givenAddress_districtId;
+    }
+
+    public String getProtocol_violator_personDocument_givenAddress_address() {
+        return protocol_violator_personDocument_givenAddress_address;
+    }
+
+    public void setProtocol_violator_personDocument_givenAddress_address(String protocol_violator_personDocument_givenAddress_address) {
+        this.protocol_violator_personDocument_givenAddress_address = protocol_violator_personDocument_givenAddress_address;
+    }
+
     public String getResolution_externalId() {
         return resolution_externalId;
     }
 
     public void setResolution_externalId(String resolution_externalId) {
         this.resolution_externalId = resolution_externalId;
+    }
+
+    public String getResolution_considerUserInfo() {
+        return resolution_considerUserInfo;
+    }
+
+    public void setResolution_considerUserInfo(String resolution_considerUserInfo) {
+        this.resolution_considerUserInfo = resolution_considerUserInfo;
+    }
+
+    public String getResolution_inspectorPositionId() {
+        return resolution_inspectorPositionId;
+    }
+
+    public void setResolution_inspectorPositionId(String resolution_inspectorPositionId) {
+        this.resolution_inspectorPositionId = resolution_inspectorPositionId;
+    }
+
+    public String getResolution_inspectorRankId() {
+        return resolution_inspectorRankId;
+    }
+
+    public void setResolution_inspectorRankId(String resolution_inspectorRankId) {
+        this.resolution_inspectorRankId = resolution_inspectorRankId;
+    }
+
+    public String getResolution_inspectorWorkCertificate() {
+        return resolution_inspectorWorkCertificate;
+    }
+
+    public void setResolution_inspectorWorkCertificate(String resolution_inspectorWorkCertificate) {
+        this.resolution_inspectorWorkCertificate = resolution_inspectorWorkCertificate;
     }
 
     public String getResolution_resolutionTime() {
@@ -953,39 +1220,6 @@ public class ProtocolData {
         this.payments_payeeInfo_toInn = payments_payeeInfo_toInn;
     }
 
-    public String getResolution_considerUserInfo() {
-        return resolution_considerUserInfo;
-    }
-
-    public void setResolution_considerUserInfo(String resolution_considerUserInfo) {
-        this.resolution_considerUserInfo = resolution_considerUserInfo;
-    }
-
-    public String getResolution_inspectorPositionId() {
-        return resolution_inspectorPositionId;
-    }
-
-    public void setResolution_inspectorPositionId(String resolution_inspectorPositionId) {
-        this.resolution_inspectorPositionId = resolution_inspectorPositionId;
-    }
-
-    public String getResolution_inspectorRankId() {
-        return resolution_inspectorRankId;
-    }
-
-    public void setResolution_inspectorRankId(String resolution_inspectorRankId) {
-        this.resolution_inspectorRankId = resolution_inspectorRankId;
-    }
-
-    public String getResolution_inspectorWorkCertificate() {
-        return resolution_inspectorWorkCertificate;
-    }
-
-    public void setResolution_inspectorWorkCertificate(String resolution_inspectorWorkCertificate) {
-        this.resolution_inspectorWorkCertificate = resolution_inspectorWorkCertificate;
-    }
-
-
     @Override
     public String toString() {
         return "ProtocolData{" +
@@ -1024,6 +1258,29 @@ public class ProtocolData {
                 ", protocol_violator_violatorDetail_employmentPosition='" + protocol_violator_violatorDetail_employmentPosition + '\'' +
                 ", protocol_violator_violatorDetail_additionally='" + protocol_violator_violatorDetail_additionally + '\'' +
                 ", protocol_violator_violatorDetail_signature='" + protocol_violator_violatorDetail_signature + '\'' +
+                ", protocol_violator_person_firstNameKir='" + protocol_violator_person_firstNameKir + '\'' +
+                ", protocol_violator_person_secondNameKir='" + protocol_violator_person_secondNameKir + '\'' +
+                ", protocol_violator_person_lastNameKir='" + protocol_violator_person_lastNameKir + '\'' +
+                ", protocol_violator_person_firstNameLat='" + protocol_violator_person_firstNameLat + '\'' +
+                ", protocol_violator_person_secondNameLat='" + protocol_violator_person_secondNameLat + '\'' +
+                ", protocol_violator_person_lastNameLat='" + protocol_violator_person_lastNameLat + '\'' +
+                ", protocol_violator_person_birthDate='" + protocol_violator_person_birthDate + '\'' +
+                ", protocol_violator_person_birthAddress_countryId='" + protocol_violator_person_birthAddress_countryId + '\'' +
+                ", protocol_violator_person_birthAddress_regionId='" + protocol_violator_person_birthAddress_regionId + '\'' +
+                ", protocol_violator_person_birthAddress_districtId='" + protocol_violator_person_birthAddress_districtId + '\'' +
+                ", protocol_violator_person_birthAddress_address='" + protocol_violator_person_birthAddress_address + '\'' +
+                ", protocol_violator_person_citizenshipTypeId='" + protocol_violator_person_citizenshipTypeId + '\'' +
+                ", protocol_violator_person_genderId='" + protocol_violator_person_genderId + '\'' +
+                ", protocol_violator_person_nationalityId='" + protocol_violator_person_nationalityId + '\'' +
+                ", protocol_violator_personDocument_documentSeries='" + protocol_violator_personDocument_documentSeries + '\'' +
+                ", protocol_violator_personDocument_documentNumber='" + protocol_violator_personDocument_documentNumber + '\'' +
+                ", protocol_violator_personDocument_documentTypeId='" + protocol_violator_personDocument_documentTypeId + '\'' +
+                ", protocol_violator_personDocument_documentGivenDate='" + protocol_violator_personDocument_documentGivenDate + '\'' +
+                ", protocol_violator_personDocument_documentExpireDate='" + protocol_violator_personDocument_documentExpireDate + '\'' +
+                ", protocol_violator_personDocument_givenAddress_countryId='" + protocol_violator_personDocument_givenAddress_countryId + '\'' +
+                ", protocol_violator_personDocument_givenAddress_regionId='" + protocol_violator_personDocument_givenAddress_regionId + '\'' +
+                ", protocol_violator_personDocument_givenAddress_districtId='" + protocol_violator_personDocument_givenAddress_districtId + '\'' +
+                ", protocol_violator_personDocument_givenAddress_address='" + protocol_violator_personDocument_givenAddress_address + '\'' +
                 ", resolution_externalId='" + resolution_externalId + '\'' +
                 ", resolution_considerUserInfo='" + resolution_considerUserInfo + '\'' +
                 ", resolution_inspectorPositionId='" + resolution_inspectorPositionId + '\'' +
