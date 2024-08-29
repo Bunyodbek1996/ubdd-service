@@ -7,6 +7,9 @@ public class ProtocolData {
     @CsvCustomBindByName(column = "protocol_externalId", converter = NullValueConverter.class)
     private String protocol_externalId;
 
+    @CsvCustomBindByName(column = "protocol_vehicleNumber", converter = NullValueConverter.class)
+    private String protocol_vehicleNumber;
+
     @CsvCustomBindByName(column = "protocol_inspectorRegionId", converter = NullValueConverter.class)
     private String protocol_inspectorRegionId;
 
@@ -470,6 +473,14 @@ public class ProtocolData {
 
     public String getProtocol_isAgree() {
         return protocol_isAgree;
+    }
+
+    public String getProtocol_vehicleNumber() {
+        return protocol_vehicleNumber;
+    }
+
+    public void setProtocol_vehicleNumber(String protocol_vehicleNumber) {
+        this.protocol_vehicleNumber = protocol_vehicleNumber;
     }
 
     public void setProtocol_isAgree(String protocol_isAgree) {

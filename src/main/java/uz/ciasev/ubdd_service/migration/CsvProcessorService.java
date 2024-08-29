@@ -183,6 +183,7 @@ public class CsvProcessorService {
             protocolRequestDTO.setAddress(protocolData.getMbprotocol_address());
             protocolRequestDTO.setIsFamiliarize(protocolData.getProtocol_isFamiliarize() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isFamiliarize()));
             protocolRequestDTO.setIsAgree(protocolData.getProtocol_isAgree() == null ? null : Boolean.parseBoolean(protocolData.getProtocol_isAgree()));
+            protocolRequestDTO.setVehicleNumber(protocolData.getProtocol_vehicleNumber());
 
             protocolRequestDTO.setViolator(buildViolatorCreateRequestDTO(protocolData));
 
