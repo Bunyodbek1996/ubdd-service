@@ -103,7 +103,7 @@ public class CsvProcessorService {
                 } catch (Exception e) {
                     collectToListAndSaveSomeFile(e.getMessage() + "\n\n");
                 }
-                if (++i > 1) break;
+                System.out.println(++i);
             }
 
         } catch (Exception e) {
@@ -189,7 +189,6 @@ public class CsvProcessorService {
 
             protocolDTOService.buildDetailForCreateProtocol(user, () -> protocolCreateService.createElectronProtocol(user, protocolRequestDTO));
         } catch (Exception e) {
-            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION PROTOCOL FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -237,7 +236,6 @@ public class CsvProcessorService {
 
             decisionDTOService.buildListForCreate(() -> admResolutionService.createSingle(user, resolutionRequestDTO.getExternalId(), resolutionRequestDTO).getCreatedDecision());
         } catch (Exception e) {
-            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION RESOLUTION FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -273,7 +271,6 @@ public class CsvProcessorService {
 
             invoiceService.create(user, invoiceRequest);
         } catch (Exception e) {
-            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION INVOICE FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -310,7 +307,6 @@ public class CsvProcessorService {
 
             billingExecutionService.handlePayment(user, paymentDTO);
         } catch (Exception e) {
-            e.printStackTrace();
             String pro = protocolData.getProtocol_externalId() + " CREATION PAYMENT FAILED WITH: ";
             return Pair.of(pro, e.getMessage());
         }
@@ -391,8 +387,18 @@ public class CsvProcessorService {
 
         PersonDocumentRequestDTO personDocumentRequestDTO = new PersonDocumentRequestDTO();
 
-        personDocumentRequestDTO.setSeries(protocolData.getProtocol_violator_personDocument_documentSeries());
-        personDocumentRequestDTO.setNumber(protocolData.getProtocol_violator_personDocument_documentNumber());
+        String documentSeries = protocolData.getProtocol_violator_personDocument_documentSeries();
+        String documentNumber = protocolData.getProtocol_violator_personDocument_documentNumber();
+        personDocumentRequestDTO.setNumber(documentNumber);
+        if (documentSeries != null) {
+            personDocumentRequestDTO.setSeries(documentSeries);
+        } else {
+            String series = documentNumber.replaceAll("[0-9]", "");
+            personDocumentRequestDTO.setSeries(series);
+        }
+
+
+
         personDocumentRequestDTO.setPersonDocumentType(buildPersonDocumentTypeOrNull(protocolData.getProtocol_violator_personDocument_documentTypeId()));
         personDocumentRequestDTO.setGivenDate(strToLocalDate(protocolData.getProtocol_violator_personDocument_documentGivenDate()));
 
