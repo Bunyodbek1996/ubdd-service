@@ -389,7 +389,7 @@ public class CsvProcessorService {
 
         String documentSeries = protocolData.getProtocol_violator_personDocument_documentSeries();
         String documentNumber = protocolData.getProtocol_violator_personDocument_documentNumber();
-        personDocumentRequestDTO.setNumber(documentNumber);
+        personDocumentRequestDTO.setNumber(documentNumber.replaceAll("^[0-9]+", ""));
         if (documentSeries != null) {
             personDocumentRequestDTO.setSeries(documentSeries);
         } else {
@@ -417,9 +417,12 @@ public class CsvProcessorService {
 
     private Country buildCountryOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return countryRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Country.class, Long.parseLong(id))
-        );
+        Country country = new Country();
+        country.setId(Long.parseLong(id));
+        return country;
+//        return countryRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Country.class, Long.parseLong(id))
+//        );
     }
 
     private Region buildRegionOrNull(String id) {
@@ -431,86 +434,122 @@ public class CsvProcessorService {
 
     private District buildDistrictOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return districtRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(District.class, Long.parseLong(id))
-        );
+        District district = new District();
+        district.setId(Long.parseLong(id));
+        return district;
+//        return districtRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(District.class, Long.parseLong(id))
+//        );
     }
 
     private Mtp buildMtpOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return mtpRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Mtp.class, Long.parseLong(id))
-        );
+        Mtp mtp = new Mtp();
+        mtp.setId(Long.parseLong(id));
+        return mtp;
+//        return mtpRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Mtp.class, Long.parseLong(id))
+//        );
     }
 
     private Department buildDepartmentOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return departmentRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Department.class, Long.parseLong(id))
-        );
+        Department department = new Department();
+        department.setId(Long.parseLong(id));
+        return department;
+//        return departmentRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Department.class, Long.parseLong(id))
+//        );
     }
 
     private Article buildArticleOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return articleRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Article.class, Long.parseLong(id))
-        );
+        Article article = new Article();
+        article.setId(Long.parseLong(id));
+        return article;
+//        return articleRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Article.class, Long.parseLong(id))
+//        );
     }
 
     private ArticlePart buildArticlePartOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return articlePartRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(ArticlePart.class, Long.parseLong(id))
-        );
+        ArticlePart articlePart = new ArticlePart();
+        articlePart.setId(Long.parseLong(id));
+        return articlePart;
+//        return articlePartRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(ArticlePart.class, Long.parseLong(id))
+//        );
     }
 
     private ArticleViolationType buildArticleViolationTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return articleViolationTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(ArticleViolationType.class, Long.parseLong(id))
-        );
+        ArticleViolationType articleViolationType = new ArticleViolationType();
+        articleViolationType.setId(Long.parseLong(id));
+        return articleViolationType;
+//        return articleViolationTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(ArticleViolationType.class, Long.parseLong(id))
+//        );
     }
 
     private Occupation buildOccupationOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return occupationRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Occupation.class, Long.parseLong(id))
-        );
+        Occupation occupation = new Occupation();
+        occupation.setId(Long.parseLong(id));
+        return occupation;
+//        return occupationRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Occupation.class, Long.parseLong(id))
+//        );
     }
 
     private PunishmentType buildPunishmentTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return punishmentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(PunishmentType.class, Long.parseLong(id))
-        );
+        PunishmentType punishmentType = new PunishmentType();
+        punishmentType.setId(Long.parseLong(id));
+        return punishmentType;
+//        return punishmentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(PunishmentType.class, Long.parseLong(id))
+//        );
     }
 
     private CitizenshipType buildCitizenshipTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return citizenshipTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(CitizenshipType.class, Long.parseLong(id))
-        );
+        CitizenshipType citizenshipType = new CitizenshipType();
+        citizenshipType.setId(Long.parseLong(id));
+        return citizenshipType;
+//        return citizenshipTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(CitizenshipType.class, Long.parseLong(id))
+//        );
     }
 
     private Gender buildGenderOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return genderRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Gender.class, Long.parseLong(id))
-        );
+        Gender gender = new Gender();
+        gender.setId(Long.parseLong(id));
+        return gender;
+//        return genderRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Gender.class, Long.parseLong(id))
+//        );
     }
 
     private Nationality buildNationalityOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return nationalityRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(Nationality.class, Long.parseLong(id))
-        );
+        Nationality nationality = new Nationality();
+        nationality.setId(Long.parseLong(id));
+        return nationality;
+//        return nationalityRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(Nationality.class, Long.parseLong(id))
+//        );
     }
 
     private PersonDocumentType buildPersonDocumentTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        return personDocumentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-                () -> new EntityByIdNotFound(PersonDocumentType.class, Long.parseLong(id))
-        );
+        PersonDocumentType personDocumentType = new PersonDocumentType();
+        personDocumentType.setId(Long.parseLong(id));
+        return personDocumentType;
+//        return personDocumentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+//                () -> new EntityByIdNotFound(PersonDocumentType.class, Long.parseLong(id))
+//        );
     }
 }
 
