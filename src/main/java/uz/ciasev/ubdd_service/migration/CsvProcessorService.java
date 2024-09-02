@@ -49,9 +49,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -85,16 +82,12 @@ public class CsvProcessorService {
     private final NationalityRepository nationalityRepository;
     private final PersonDocumentTypeRepository personDocumentTypeRepository;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
-    private final String resourcesFolderPath = "src/main/resources/errors";
-
-
     public void startProcess(String filePath) throws IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
         processCsv(resource.getFile().getPath());
     }
 
-    public void processCsv(String filePath) {
+    private void processCsv(String filePath) {
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
@@ -105,30 +98,21 @@ public class CsvProcessorService {
 
             int i = 0;
             for (ProtocolData row : csvToBean) {
-                final int rowNumber = ++i;
-                executorService.submit(() -> {
-                    try {
-                        saveToDatabase(row);
-                        System.out.println("Processed row: " + rowNumber);
-                    } catch (Exception e) {
-                        collectToListAndSaveSomeFile(e.getMessage() + "\n\n");
-                    }
-                });
+                try {
+                    saveToDatabase(row);
+                } catch (Exception e) {
+                    collectToListAndSaveSomeFile(e.getMessage() + "\n\n");
+                }
+                System.out.println(++i);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            executorService.shutdown();
-            try {
-                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private void collectToListAndSaveSomeFile(String errorMessage) {
+        String resourcesFolderPath = "src/main/resources/errors";
         File resourcesFolder = new File(resourcesFolderPath);
 
         if (!resourcesFolder.exists()) {
@@ -138,13 +122,11 @@ public class CsvProcessorService {
         String filePath = resourcesFolderPath + "/error_log.txt";
         File errorFile = new File(filePath);
 
-        synchronized (this) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(errorFile, true))) {
-                writer.write(errorMessage);
-                writer.newLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(errorFile, true))) {
+            writer.write(errorMessage);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
