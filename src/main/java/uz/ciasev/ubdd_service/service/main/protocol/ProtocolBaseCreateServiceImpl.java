@@ -90,14 +90,16 @@ public class ProtocolBaseCreateServiceImpl implements ProtocolBaseCreateService 
         }
 
         ViolatorCreateRequestDTO violatorRequestDTO = protocolDTO.getViolator();
-//        Pair<Person, ? extends PersonDocument> personWithDocument = personDataService.provideByPinppOrManualDocument(violatorRequestDTO);
+        Pair<Person, ? extends PersonDocument> personWithDocument;
 
-        Person person = violatorRequestDTO.getPerson().buildPerson();
-        person.setPinpp(violatorRequestDTO.getPinpp());
-        var savedPerson = personService.findOrSave(person);
-
-        Pair<Person, ? extends PersonDocument> personWithDocument
-                = Pair.of(savedPerson, violatorRequestDTO.getDocument());
+        if (violatorRequestDTO.getPerson().getFirstNameLat() == null && violatorRequestDTO.getPerson().getLastNameLat() == null) {
+            personWithDocument = personDataService.provideByPinppOrManualDocument(violatorRequestDTO);
+        } else {
+            Person person = violatorRequestDTO.getPerson().buildPerson();
+            person.setPinpp(violatorRequestDTO.getPinpp());
+            var savedPerson = personService.findOrSave(person);
+            personWithDocument = Pair.of(savedPerson, violatorRequestDTO.getDocument());
+        }
 
         AdmCase admCase = admCaseSupplier.get();
 
