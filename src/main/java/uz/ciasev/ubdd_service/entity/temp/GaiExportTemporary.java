@@ -1,5 +1,6 @@
 package uz.ciasev.ubdd_service.entity.temp;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "gai_export_temporary")
+@NoArgsConstructor
 public class GaiExportTemporary {
 
     @Id
