@@ -137,33 +137,45 @@ public class CsvProcessorService {
 
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
-        if (gaiExportTemporaryRepository.existsByExId(protocolData.getProtocol_externalId())) {
-            return;
+        GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());
+        if (exported != null) {
+            if (exported.getIsSuccess()) return;
+        } else {
+            exported = new GaiExportTemporary(protocolData.getProtocol_externalId());
         }
 
         User user = userRepository.findByUsernameIgnoreCase("ubdd-service").orElseThrow();
 
         Pair<String, String> protocolResult = saveProtocol(user, protocolData);
         if (!protocolResult.getFirst().equals("SUCCESS")) {
-            throw new RuntimeException(protocolResult.getFirst() + " -> " + protocolResult.getSecond());
+            exported.attachResult(false, protocolResult.getSecond());
+            gaiExportTemporaryRepository.save(exported);
+            return;
         }
 
         Pair<String, String> resolutionResult = saveResolution(user, protocolData);
         if (!resolutionResult.getFirst().equals("SUCCESS")) {
-            throw new RuntimeException(resolutionResult.getFirst() + " -> " + resolutionResult.getSecond());
+            exported.attachResult(false, resolutionResult.getSecond());
+            gaiExportTemporaryRepository.save(exported);
+            return;
         }
 
         Pair<String, String> invoiceResult = saveInvoice(user, protocolData);
         if (!invoiceResult.getFirst().equals("SUCCESS")) {
-            throw new RuntimeException(invoiceResult.getFirst() + " -> " + invoiceResult.getSecond());
+            exported.attachResult(false, invoiceResult.getSecond());
+            gaiExportTemporaryRepository.save(exported);
+            return;
         }
 
         Pair<String, String> paymentResult = savePayment(user, protocolData);
         if (!paymentResult.getFirst().equals("SUCCESS")) {
-            throw new RuntimeException(paymentResult.getFirst() + " -> " + paymentResult.getSecond());
+            exported.attachResult(false, paymentResult.getSecond());
+            gaiExportTemporaryRepository.save(exported);
+            return;
         }
 
-        gaiExportTemporaryRepository.save(new GaiExportTemporary(protocolData.getProtocol_externalId()));
+        exported.attachResult(true, null);
+        gaiExportTemporaryRepository.save(exported);
     }
 
     private Pair<String, String> saveProtocol(User user, ProtocolData protocolData) {

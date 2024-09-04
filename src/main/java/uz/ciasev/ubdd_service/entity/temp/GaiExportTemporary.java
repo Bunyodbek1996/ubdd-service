@@ -1,6 +1,11 @@
 package uz.ciasev.ubdd_service.entity.temp;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "gai_export_temporary")
 public class GaiExportTemporary {
@@ -13,24 +18,18 @@ public class GaiExportTemporary {
     @Column(name = "EX_ID", nullable = false)
     private String exId;
 
+    @Column(name = "is_success")
+    private Boolean isSuccess;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getExId() {
-        return exId;
-    }
-
-    public void setExId(String exId) {
-        this.exId = exId;
-    }
+    @Column(name = "error", columnDefinition = "TEXT")
+    private String error;
 
     public GaiExportTemporary(String exId) {
         this.exId = exId;
+    }
+
+    public void attachResult(boolean isSuccess, String error) {
+        this.isSuccess = isSuccess;
+        this.error = error;
     }
 }
