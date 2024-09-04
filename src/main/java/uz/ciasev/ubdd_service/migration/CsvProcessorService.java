@@ -417,12 +417,12 @@ public class CsvProcessorService {
 
     private Country buildCountryOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        Country country = new Country();
-        country.setId(Long.parseLong(id));
-        return country;
-//        return countryRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(Country.class, Long.parseLong(id))
-//        );
+//        Country country = new Country();
+//        country.setId(Long.parseLong(id));
+//        return country;
+        return countryRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(Country.class, Long.parseLong(id))
+        );
     }
 
     private Region buildRegionOrNull(String id) {
@@ -434,12 +434,12 @@ public class CsvProcessorService {
 
     private District buildDistrictOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        District district = new District();
-        district.setId(Long.parseLong(id));
-        return district;
-//        return districtRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(District.class, Long.parseLong(id))
-//        );
+//        District district = new District();
+//        district.setId(Long.parseLong(id));
+//        return district;
+        return districtRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(District.class, Long.parseLong(id))
+        );
     }
 
     private Mtp buildMtpOrNull(String id) {
@@ -464,32 +464,32 @@ public class CsvProcessorService {
 
     private Article buildArticleOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        Article article = new Article();
-        article.setId(Long.parseLong(id));
-        return article;
-//        return articleRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(Article.class, Long.parseLong(id))
-//        );
+//        Article article = new Article();
+//        article.setId(Long.parseLong(id));
+//        return article;
+        return articleRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(Article.class, Long.parseLong(id))
+        );
     }
 
     private ArticlePart buildArticlePartOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        ArticlePart articlePart = new ArticlePart();
-        articlePart.setId(Long.parseLong(id));
-        return articlePart;
-//        return articlePartRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(ArticlePart.class, Long.parseLong(id))
-//        );
+//        ArticlePart articlePart = new ArticlePart();
+//        articlePart.setId(Long.parseLong(id));
+//        return articlePart;
+        return articlePartRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(ArticlePart.class, Long.parseLong(id))
+        );
     }
 
     private ArticleViolationType buildArticleViolationTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        ArticleViolationType articleViolationType = new ArticleViolationType();
-        articleViolationType.setId(Long.parseLong(id));
-        return articleViolationType;
-//        return articleViolationTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(ArticleViolationType.class, Long.parseLong(id))
-//        );
+//        ArticleViolationType articleViolationType = new ArticleViolationType();
+//        articleViolationType.setId(Long.parseLong(id));
+//        return articleViolationType;
+        return articleViolationTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(ArticleViolationType.class, Long.parseLong(id))
+        );
     }
 
     private Occupation buildOccupationOrNull(String id) {
