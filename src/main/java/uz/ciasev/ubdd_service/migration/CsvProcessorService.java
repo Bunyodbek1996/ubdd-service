@@ -4,7 +4,6 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -130,7 +129,7 @@ public class CsvProcessorService {
     }
 
 
-    @Async
+    @Async("customTaskExecutor")
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());

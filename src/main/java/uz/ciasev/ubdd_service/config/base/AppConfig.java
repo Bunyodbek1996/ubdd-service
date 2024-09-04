@@ -46,6 +46,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableJpaRepositories(basePackages = {"uz.ciasev.ubdd_service.repository"})
@@ -149,13 +150,13 @@ public class AppConfig {
         return new ModelMapper();
     }
 
-    @Bean
-    public TaskExecutor taskExecutor() {
+    @Bean(name = "customTaskExecutor")
+    public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("MyExecutor-");
+        executor.setCorePoolSize(10);  // Minimum number of threads in the pool
+        executor.setMaxPoolSize(20);   // Maximum number of threads in the pool
+        executor.setQueueCapacity(100); // Queue size for tasks waiting for a thread
+        executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
         return executor;
     }
