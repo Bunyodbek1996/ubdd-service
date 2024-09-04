@@ -11,8 +11,6 @@ import uz.ciasev.ubdd_service.entity.dict.Region;
 import uz.ciasev.ubdd_service.entity.mib.MibAutoSendLog;
 import uz.ciasev.ubdd_service.entity.mib.MibExecutionCard;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
-import uz.ciasev.ubdd_service.entity.temporary.UbddDecison202311;
-import uz.ciasev.ubdd_service.entity.user.User;
 import uz.ciasev.ubdd_service.exception.NotFoundException;
 import uz.ciasev.ubdd_service.mvd_core.api.mib.api.types.MibResult;
 import uz.ciasev.ubdd_service.repository.mib.MibAutoSendLogRepository;
@@ -20,12 +18,6 @@ import uz.ciasev.ubdd_service.service.address.AddressService;
 import uz.ciasev.ubdd_service.service.dict.DistrictDictionaryService;
 import uz.ciasev.ubdd_service.service.dict.RegionDictionaryService;
 import uz.ciasev.ubdd_service.service.resolution.ResolutionService;
-import uz.ciasev.ubdd_service.service.resolution.decision.DecisionService;
-import uz.ciasev.ubdd_service.service.temporary.UbddDecison202311Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j

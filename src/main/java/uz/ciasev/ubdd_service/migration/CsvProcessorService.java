@@ -23,6 +23,7 @@ import uz.ciasev.ubdd_service.entity.dict.article.ArticleViolationType;
 import uz.ciasev.ubdd_service.entity.dict.person.*;
 import uz.ciasev.ubdd_service.entity.dict.resolution.DecisionTypeAlias;
 import uz.ciasev.ubdd_service.entity.dict.resolution.PunishmentType;
+import uz.ciasev.ubdd_service.entity.temp.GaiExportTemporary;
 import uz.ciasev.ubdd_service.entity.user.User;
 import uz.ciasev.ubdd_service.exception.notfound.EntityByIdNotFound;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPayeeInfoDTO;
@@ -34,6 +35,7 @@ import uz.ciasev.ubdd_service.repository.dict.article.ArticleRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleViolationTypeRepository;
 import uz.ciasev.ubdd_service.repository.dict.person.*;
 import uz.ciasev.ubdd_service.repository.dict.resolution.PunishmentTypeRepository;
+import uz.ciasev.ubdd_service.repository.temporary.GaiExportTemporaryRepository;
 import uz.ciasev.ubdd_service.repository.user.UserRepository;
 import uz.ciasev.ubdd_service.service.execution.BillingExecutionService;
 import uz.ciasev.ubdd_service.service.invoice.InvoiceService;
@@ -66,6 +68,8 @@ public class CsvProcessorService {
 
     private final InvoiceService invoiceService;
     private final BillingExecutionService billingExecutionService;
+
+    private final GaiExportTemporaryRepository gaiExportTemporaryRepository;
 
     private final CountryRepository countryRepository;
     private final RegionRepository regionRepository;
@@ -101,7 +105,7 @@ public class CsvProcessorService {
                 try {
                     saveToDatabase(row);
                 } catch (Exception e) {
-                    collectToListAndSaveSomeFile(e.getMessage() + "\n\n");
+                    collectToListAndSaveSomeFile(e.getMessage());
                 }
                 System.out.println(++i);
             }
@@ -133,6 +137,10 @@ public class CsvProcessorService {
 
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
+        if (gaiExportTemporaryRepository.existsByExId(protocolData.getProtocol_externalId())) {
+            return;
+        }
+
         User user = userRepository.findByUsernameIgnoreCase("ubdd-service").orElseThrow();
 
         Pair<String, String> protocolResult = saveProtocol(user, protocolData);
@@ -154,6 +162,8 @@ public class CsvProcessorService {
         if (!paymentResult.getFirst().equals("SUCCESS")) {
             throw new RuntimeException(paymentResult.getFirst() + " -> " + paymentResult.getSecond());
         }
+
+        gaiExportTemporaryRepository.save(new GaiExportTemporary(protocolData.getProtocol_externalId()));
     }
 
     private Pair<String, String> saveProtocol(User user, ProtocolData protocolData) {

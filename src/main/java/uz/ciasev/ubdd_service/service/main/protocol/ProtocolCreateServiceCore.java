@@ -26,7 +26,6 @@ public class ProtocolCreateServiceCore implements ProtocolCreateService {
     private final AdmCaseService admCaseService;
     private final ProtocolRepository protocolRepository;
     private final ProtocolBaseCreateService baseCreateService;
-    private final ProtocolUniquenessValidationService protocolUniquenessValidationService;
     private final ProtocolCreateAdditionalValidationService protocolCreateAdditionalValidationService;
 
     @Override
