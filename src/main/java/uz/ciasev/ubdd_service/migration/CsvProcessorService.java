@@ -4,7 +4,9 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.util.Pair;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ciasev.ubdd_service.dto.internal.request.AddressRequestDTO;
@@ -89,7 +91,8 @@ public class CsvProcessorService {
     private final NationalityRepository nationalityRepository;
     private final PersonDocumentTypeRepository personDocumentTypeRepository;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10); // Adjust the thread pool size as needed
+
+    private final TaskExecutor taskExecutor;
 
 
     public void startProcess(String filePath) throws IOException {
@@ -108,7 +111,7 @@ public class CsvProcessorService {
 
             int i = 0;
             for (ProtocolData row : csvToBean) {
-                executorService.submit(() -> {
+                taskExecutor.execute(() -> {
                     try {
                         saveToDatabase(row);
                     } catch (Exception e) {
@@ -117,9 +120,6 @@ public class CsvProcessorService {
                 });
                 System.out.println(++i);
             }
-
-            executorService.shutdown();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
