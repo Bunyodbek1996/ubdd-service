@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.util.Pair;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ciasev.ubdd_service.dto.internal.request.AddressRequestDTO;
@@ -53,9 +53,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Service
 @RequiredArgsConstructor
@@ -79,20 +76,9 @@ public class CsvProcessorService {
     private final CountryRepository countryRepository;
     private final RegionRepository regionRepository;
     private final DistrictRepository districtRepository;
-    private final MtpRepository mtpRepository;
     private final ArticleRepository articleRepository;
     private final ArticlePartRepository articlePartRepository;
     private final ArticleViolationTypeRepository articleViolationTypeRepository;
-    private final DepartmentRepository departmentRepository;
-    private final OccupationRepository occupationRepository;
-    private final PunishmentTypeRepository punishmentTypeRepository;
-    private final CitizenshipTypeRepository citizenshipTypeRepository;
-    private final GenderRepository genderRepository;
-    private final NationalityRepository nationalityRepository;
-    private final PersonDocumentTypeRepository personDocumentTypeRepository;
-
-
-    private final TaskExecutor taskExecutor;
 
 
     public void startProcess(String filePath) throws IOException {
@@ -111,13 +97,11 @@ public class CsvProcessorService {
 
             int i = 0;
             for (ProtocolData row : csvToBean) {
-                taskExecutor.execute(() -> {
-                    try {
-                        saveToDatabase(row);
-                    } catch (Exception e) {
-                        collectToListAndSaveSomeFile(e.getMessage());
-                    }
-                });
+                try {
+                    saveToDatabase(row);
+                } catch (Exception e) {
+                    collectToListAndSaveSomeFile(e.getMessage());
+                }
                 System.out.println(++i);
             }
         } catch (Exception e) {
@@ -146,6 +130,7 @@ public class CsvProcessorService {
     }
 
 
+    @Async
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());
@@ -429,7 +414,6 @@ public class CsvProcessorService {
             String series = documentNumber.replaceAll("[0-9]", "");
             personDocumentRequestDTO.setSeries(series);
         }
-
 
 
         personDocumentRequestDTO.setPersonDocumentType(buildPersonDocumentTypeOrNull(protocolData.getProtocol_violator_personDocument_documentTypeId()));

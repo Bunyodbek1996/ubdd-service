@@ -31,6 +31,7 @@ import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -50,6 +51,7 @@ import java.util.Map;
 @EnableJpaRepositories(basePackages = {"uz.ciasev.ubdd_service.repository"})
 @EntityScan(basePackages = "uz.ciasev.ubdd_service.entity", basePackageClasses = Jsr310JpaConverters.class)
 @EnableJpaAuditing
+@EnableAsync
 @EnableTransactionManagement(order = 1000)
 public class AppConfig {
 
