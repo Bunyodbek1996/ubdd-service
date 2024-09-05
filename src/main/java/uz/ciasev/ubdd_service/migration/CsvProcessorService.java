@@ -34,8 +34,6 @@ import uz.ciasev.ubdd_service.repository.dict.*;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticlePartRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleViolationTypeRepository;
-import uz.ciasev.ubdd_service.repository.dict.person.*;
-import uz.ciasev.ubdd_service.repository.dict.resolution.PunishmentTypeRepository;
 import uz.ciasev.ubdd_service.repository.temporary.GaiExportTemporaryRepository;
 import uz.ciasev.ubdd_service.repository.user.UserRepository;
 import uz.ciasev.ubdd_service.service.execution.BillingExecutionService;
@@ -52,7 +50,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Iterator;
+
 
 @Service
 @RequiredArgsConstructor
@@ -91,31 +89,47 @@ public class CsvProcessorService {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
+                    .withIgnoreLeadingWhiteSpace(true)
                     .withSeparator(',')
                     .build();
 
-            Iterator<ProtocolData> iterator = csvToBean.iterator();
-            int i = 1;
-            while (iterator.hasNext()) {
+            int i = 0;
+            for (ProtocolData row : csvToBean) {
                 try {
-                    ProtocolData row = iterator.next();
                     saveToDatabase(row);
                 } catch (Exception e) {
-                    String errorMessage = String.format("Error on line %d: %s", i, e.getMessage());
-                    GaiExportTemporary exported = new GaiExportTemporary();
-                    exported.setExId(i + " " + filePath);
-                    exported.attachResult(false, errorMessage);
-                    gaiExportTemporaryRepository.save(exported);
+                    collectToListAndSaveSomeFile(e.getMessage());
                 }
-                System.out.println(i++);
+                System.out.println(++i);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void collectToListAndSaveSomeFile(String errorMessage) {
+        String resourcesFolderPath = "src/main/resources/errors";
+        File resourcesFolder = new File(resourcesFolderPath);
 
-    @Async("customTaskExecutor")
+        if (!resourcesFolder.exists()) {
+            resourcesFolder.mkdirs();
+        }
+
+        String filePath = resourcesFolderPath + "/error_log.txt";
+        File errorFile = new File(filePath);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(errorFile, true))) {
+            writer.write(errorMessage);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    //@Async("customTaskExecutor")
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());
