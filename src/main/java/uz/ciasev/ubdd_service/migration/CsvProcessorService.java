@@ -208,7 +208,7 @@ public class CsvProcessorService {
             protocolDTOService.buildDetailForCreateProtocol(user, () -> protocolCreateService.createElectronProtocol(user, protocolRequestDTO));
         } catch (Exception e) {
             String pro = protocolData.getProtocol_externalId() + " CREATION PROTOCOL FAILED WITH: ";
-            return Pair.of(pro, e.getMessage());
+            return Pair.of(pro, e.getMessage() != null ? e.getMessage() : e.getCause().toString());
         }
 
         return Pair.of("SUCCESS", "SUCCESS");
@@ -255,7 +255,7 @@ public class CsvProcessorService {
             decisionDTOService.buildListForCreate(() -> admResolutionService.createSingle(user, resolutionRequestDTO.getExternalId(), resolutionRequestDTO).getCreatedDecision());
         } catch (Exception e) {
             String pro = protocolData.getProtocol_externalId() + " CREATION RESOLUTION FAILED WITH: ";
-            return Pair.of(pro, e.getMessage());
+            return Pair.of(pro, e.getMessage() != null ? e.getMessage() : e.getCause().toString());
         }
 
         return Pair.of("SUCCESS", "SUCCESS");
@@ -290,7 +290,7 @@ public class CsvProcessorService {
             invoiceService.create(user, invoiceRequest);
         } catch (Exception e) {
             String pro = protocolData.getProtocol_externalId() + " CREATION INVOICE FAILED WITH: ";
-            return Pair.of(pro, e.getMessage());
+            return Pair.of(pro, e.getMessage() != null ? e.getMessage() : e.getCause().toString());
         }
 
         return Pair.of("SUCCESS", "SUCCESS");
@@ -326,7 +326,7 @@ public class CsvProcessorService {
             billingExecutionService.handlePayment(user, paymentDTO);
         } catch (Exception e) {
             String pro = protocolData.getProtocol_externalId() + " CREATION PAYMENT FAILED WITH: ";
-            return Pair.of(pro, e.getMessage());
+            return Pair.of(pro, e.getMessage() != null ? e.getMessage() : e.getCause().toString());
         }
 
         return Pair.of("SUCCESS", "SUCCESS");
