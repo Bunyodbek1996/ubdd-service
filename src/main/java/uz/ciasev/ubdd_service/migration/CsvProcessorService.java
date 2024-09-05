@@ -81,9 +81,8 @@ public class CsvProcessorService {
     private final PunishmentTypeRepository punishmentTypeRepository;
 
 
-    public void startProcess(String filePath) throws IOException {
-        ClassPathResource resource = new ClassPathResource(filePath);
-        processCsv(resource.getFile().getPath());
+    public void startProcess(String filePath) {
+        processCsv(filePath);
     }
 
     private void processCsv(String filePath) {

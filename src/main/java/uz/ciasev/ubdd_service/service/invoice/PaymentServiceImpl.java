@@ -5,17 +5,16 @@ import org.springframework.stereotype.Service;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPayeeInfoDTO;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPayerInfoDTO;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPaymentDTO;
-import uz.ciasev.ubdd_service.dto.internal.response.adm.PaymentDetailResponseDTO;
 import uz.ciasev.ubdd_service.entity.invoice.Invoice;
 import uz.ciasev.ubdd_service.entity.invoice.Payment;
 import uz.ciasev.ubdd_service.entity.invoice.PaymentDataProjection;
 import uz.ciasev.ubdd_service.repository.invoice.PaymentRepository;
 import uz.ciasev.ubdd_service.utils.MoneyFormatter;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -44,7 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setBid(paymentDTO.getBid());
         }
 
-        payment.setBlankDate(paymentDTO.getPaidAt().toLocalDate());
+        payment.setBlankDate(paymentDTO.getPaidAt() != null ? paymentDTO.getPaidAt().toLocalDate() : LocalDate.now());
         payment.setBlankNumber(paymentDTO.getDocNumber());
 
         payment.setAmount(MoneyFormatter.currencyToCoin(paymentDTO.getAmount()));

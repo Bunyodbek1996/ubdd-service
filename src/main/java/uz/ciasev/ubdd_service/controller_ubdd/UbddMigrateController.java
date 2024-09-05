@@ -19,9 +19,9 @@ public class UbddMigrateController {
     private final CsvProcessorService csvProcessorService;
 
 
-    @PostMapping("/{filePath}")
+    @GetMapping
     public ResponseEntity<?> migrate(
-            @PathVariable String filePath
+            @RequestParam(name = "path" ) String filePath
     ) throws IOException {
 
         csvProcessorService.startProcess(filePath);
