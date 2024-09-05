@@ -34,6 +34,7 @@ import uz.ciasev.ubdd_service.repository.dict.*;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticlePartRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleRepository;
 import uz.ciasev.ubdd_service.repository.dict.article.ArticleViolationTypeRepository;
+import uz.ciasev.ubdd_service.repository.dict.resolution.PunishmentTypeRepository;
 import uz.ciasev.ubdd_service.repository.temporary.GaiExportTemporaryRepository;
 import uz.ciasev.ubdd_service.repository.user.UserRepository;
 import uz.ciasev.ubdd_service.service.execution.BillingExecutionService;
@@ -77,6 +78,7 @@ public class CsvProcessorService {
     private final ArticleRepository articleRepository;
     private final ArticlePartRepository articlePartRepository;
     private final ArticleViolationTypeRepository articleViolationTypeRepository;
+    private final PunishmentTypeRepository punishmentTypeRepository;
 
 
     public void startProcess(String filePath) throws IOException {
@@ -129,7 +131,7 @@ public class CsvProcessorService {
 
 
 
-    //@Async("customTaskExecutor")
+    @Async("customTaskExecutor")
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());
@@ -520,12 +522,9 @@ public class CsvProcessorService {
 
     private PunishmentType buildPunishmentTypeOrNull(String id) {
         if (id == null || id.isBlank()) return null;
-        PunishmentType punishmentType = new PunishmentType();
-        punishmentType.setId(Long.parseLong(id));
-        return punishmentType;
-//        return punishmentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
-//                () -> new EntityByIdNotFound(PunishmentType.class, Long.parseLong(id))
-//        );
+        return punishmentTypeRepository.findById(Long.parseLong(id)).orElseThrow(
+                () -> new EntityByIdNotFound(PunishmentType.class, Long.parseLong(id))
+        );
     }
 
     private CitizenshipType buildCitizenshipTypeOrNull(String id) {
