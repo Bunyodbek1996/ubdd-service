@@ -95,13 +95,21 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
             throw new RuntimeException("Payment id is null");
         }
 
-        if (paymentRepository.findByNumber(String.valueOf(paymentDTO.getId())).isPresent()) {
-            return;
+        if (paymentDTO.getExternalId() == null) {
+            throw new RuntimeException("Payment externalId is null");
+        }
+
+        if (paymentDTO.getInvoiceSerial() == null) {
+            throw new RuntimeException("Payment externalId is null");
         }
 
         Invoice invoice = invoiceRepository.findByInvoiceSerial("MAB_" + paymentDTO.getInvoiceSerial()).orElseThrow(
                 () -> new EntityByParamsNotFound(Invoice.class, "invoiceSerial", paymentDTO.getInvoiceSerial())
         );
+
+        if (!paymentRepository.findByInvoiceId(invoice.getId()).isEmpty()) {
+            return;
+        }
 
         Payment savedPayment = paymentService.save(invoice, paymentDTO);
 

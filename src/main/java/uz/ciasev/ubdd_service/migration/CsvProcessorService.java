@@ -80,11 +80,11 @@ public class CsvProcessorService {
     private final PunishmentTypeRepository punishmentTypeRepository;
 
 
-    public void startProcess(String filePath) {
-        processCsv(filePath);
+    public String startProcess(String filePath) {
+        return processCsv(filePath);
     }
 
-    private void processCsv(String filePath) {
+    private String processCsv(String filePath) {
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
@@ -102,10 +102,10 @@ public class CsvProcessorService {
                 }
                 System.out.println(++i);
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            return e.getCause().toString();
         }
+        return "SUCCESS";
     }
 
     private void collectToListAndSaveSomeFile(String errorMessage) {

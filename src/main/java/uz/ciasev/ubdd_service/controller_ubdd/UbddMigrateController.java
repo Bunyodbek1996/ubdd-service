@@ -22,11 +22,11 @@ public class UbddMigrateController {
     @GetMapping
     public ResponseEntity<?> migrate(
             @RequestParam(name = "path" ) String filePath
-    ) throws IOException {
+    ) {
 
-        csvProcessorService.startProcess(filePath);
+        String response = csvProcessorService.startProcess(filePath);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
 }
