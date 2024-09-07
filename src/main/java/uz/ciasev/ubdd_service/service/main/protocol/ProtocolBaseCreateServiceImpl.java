@@ -92,9 +92,25 @@ public class ProtocolBaseCreateServiceImpl implements ProtocolBaseCreateService 
         ViolatorCreateRequestDTO violatorRequestDTO = protocolDTO.getViolator();
         Pair<Person, ? extends PersonDocument> personWithDocument;
 
-        if (violatorRequestDTO.getPerson().getFirstNameLat() == null
+        if (violatorRequestDTO.getPerson() == null
+                || violatorRequestDTO.getPerson().getFirstNameKir() == null
+                || violatorRequestDTO.getPerson().getLastNameKir() == null
+                || violatorRequestDTO.getPerson().getFirstNameLat() == null
                 || violatorRequestDTO.getPerson().getLastNameLat() == null
-                || violatorRequestDTO.getDocument().getGivenDate() == null) {
+                || violatorRequestDTO.getPerson().getBirthDate() == null
+                || violatorRequestDTO.getPerson().getBirthAddress() == null
+                || violatorRequestDTO.getPerson().getBirthAddress().getCountry() == null
+                || violatorRequestDTO.getPerson().getBirthAddress().getRegion() == null
+                || violatorRequestDTO.getPerson().getBirthAddress().getDistrict() == null
+                || violatorRequestDTO.getPerson().getCitizenshipType() == null
+                || violatorRequestDTO.getPerson().getGender() == null
+                || violatorRequestDTO.getPerson().getNationality() == null
+                || violatorRequestDTO.getDocument() == null
+                || violatorRequestDTO.getDocument().getSeries() == null
+                || violatorRequestDTO.getDocument().getNumber() == null
+                || violatorRequestDTO.getDocument().getPersonDocumentType() == null
+                || violatorRequestDTO.getDocument().getGivenDate() == null
+        ) {
             personWithDocument = personDataService.provideByPinppOrManualDocument(violatorRequestDTO);
         } else {
             Person person = violatorRequestDTO.getPerson().buildPerson();

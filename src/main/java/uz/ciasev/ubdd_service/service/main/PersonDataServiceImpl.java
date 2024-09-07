@@ -32,9 +32,6 @@ public class PersonDataServiceImpl implements PersonDataService {
 
         if (actorRequest.getPinpp() != null) {
             rsl = provideByPinpp(actorRequest.getPinpp());
-            if (actorRequest.getDocument() != null) {
-                rsl = Pair.of(rsl.getFirst(), actorRequest.getDocument());
-            }
         } else {
             throw new ValidationException(ErrorCode.PINPP_REQUIRED);
         }
