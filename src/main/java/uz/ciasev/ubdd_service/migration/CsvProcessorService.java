@@ -2,6 +2,7 @@ package uz.ciasev.ubdd_service.migration;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
@@ -50,6 +51,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -90,6 +93,7 @@ public class CsvProcessorService {
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
                     .withIgnoreLeadingWhiteSpace(true)
+                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
                     .withSeparator(',')
                     .build();
 
@@ -101,7 +105,26 @@ public class CsvProcessorService {
                     collectToListAndSaveSomeFile(e.getMessage());
                 }
                 System.out.println(++i);
+                if (i==10) break;
             }
+
+
+            List<CsvException> exceptions = new ArrayList<>(csvToBean.getCapturedExceptions());
+            for (CsvException csvException : exceptions) {
+                String[] fields = csvException.getLine();  // Split using comma
+                if (fields.length > 0) {
+                    String firstField = fields[0];
+                    GaiExportTemporary gaiExportTemporary = gaiExportTemporaryRepository.findByExId(firstField);
+                    if (gaiExportTemporary != null) {
+                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
+                    } else {
+                        gaiExportTemporary = new GaiExportTemporary(firstField);
+                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
+                    }
+                    gaiExportTemporaryRepository.save(gaiExportTemporary);
+                }
+            }
+
         } catch (Exception e) {
             return e.getCause().toString();
         }
