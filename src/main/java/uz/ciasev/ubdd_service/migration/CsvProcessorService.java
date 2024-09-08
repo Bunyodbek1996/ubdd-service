@@ -205,7 +205,7 @@ public class CsvProcessorService {
             protocolRequestDTO.setInspectorPositionId(protocolData.getProtocol_inspectorPositionId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorPositionId()));
             protocolRequestDTO.setInspectorRankId(protocolData.getProtocol_inspectorRankId() == null ? null : Long.parseLong(protocolData.getProtocol_inspectorRankId()));
             protocolRequestDTO.setInspectorFio(protocolData.getProtocol_inspectorFio());
-            protocolRequestDTO.setInspectorInfo(protocolData.getProtocol_inspectorInfo() == null ? "" : protocolData.getProtocol_inspectorInfo());
+            protocolRequestDTO.setInspectorInfo(protocolData.getProtocol_inspectorFio() + "( " + (protocolData.getProtocol_inspectorInfo() == null ? "" : protocolData.getProtocol_inspectorInfo()) + " )");
             protocolRequestDTO.setInspectorWorkCertificate(protocolData.getProtocol_inspectorWorkCertificate());
             protocolRequestDTO.setRegistrationTime(strToLocalDateTime(protocolData.getProtocol_registrationTime()));
             protocolRequestDTO.setViolationTime(strToLocalDateTime(protocolData.getProtocol_violationTime()));
