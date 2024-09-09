@@ -47,6 +47,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -154,12 +155,17 @@ public class AppConfig {
     @Bean(name = "customTaskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(500);  // Minimum number of threads in the pool
-        executor.setMaxPoolSize(1000);   // Maximum number of threads in the pool
-        executor.setQueueCapacity(2000); // Queue size for tasks waiting for a thread
+        executor.setCorePoolSize(400);  // Minimum number of threads in the pool
+        executor.setMaxPoolSize(450);   // Maximum number of threads in the pool
+        executor.setQueueCapacity(1000); // Queue size for tasks waiting for a thread
         executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
         return executor;
+    }
+
+    @Bean(name = "randomNumberUntil1000")
+    public Random randomNumberUntil1000() {
+        return new Random();
     }
 
     @Bean

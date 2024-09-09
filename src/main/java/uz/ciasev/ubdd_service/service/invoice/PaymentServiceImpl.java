@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final Random randomNumberUntil1000;
 
     @Override
     public List<Payment> findByInvoiceId(Long invoiceId) {
@@ -38,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentTime(paymentDTO.getPaidAt());
 
         if (paymentDTO.getBid() == null) {
-            payment.setBid("MAB_FAKE_BID_" + System.currentTimeMillis());
+            payment.setBid("MAB_FAKE_BID_" + System.currentTimeMillis() + randomNumberUntil1000.nextInt(10_000));
         } else {
             payment.setBid(paymentDTO.getBid());
         }
