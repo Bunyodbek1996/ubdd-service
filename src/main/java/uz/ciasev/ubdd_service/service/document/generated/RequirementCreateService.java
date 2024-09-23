@@ -14,7 +14,6 @@ public interface RequirementCreateService {
 
     PdfFile create(User user, RequirementPrintDTO requestDTO);
 
-    List<ProtocolGroupByPersonDTO> groupProtocolsByPerson(List<Long> ids);
 
     ViolatorRequirementDTO groupProtocolsByViolator(String pinpp);
 

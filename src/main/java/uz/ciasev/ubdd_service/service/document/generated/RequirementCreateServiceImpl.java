@@ -68,17 +68,13 @@ public class RequirementCreateServiceImpl implements RequirementCreateService {
         );
     }
 
-    @Override
-    public List<ProtocolGroupByPersonDTO> groupProtocolsByPerson(List<Long> ids) {
-        return filterProtocolsByPerson(ids, false);
-    }
 
-    private List<ProtocolGroupByPersonDTO> filterProtocolsByPerson(List<Long> ids, boolean isPersonIds) {
+    private List<ProtocolGroupByPersonDTO> filterProtocolsByPerson(List<Long> ids) {
         if (ids.size() > PROTOCOL_REQUIREMENT_MAX_SIZE) {
             throw new ValidationException(ErrorCode.REQUIREMENT_SIZE_MORE_THEN_1000);
         }
 
-        List<ProtocolGroupByPersonProjection> rsl = !isPersonIds ? protocolRepository.groupProtocolsByPerson(ids) : protocolRepository.groupProtocolsByPersonIds(ids);
+        List<ProtocolGroupByPersonProjection> rsl = protocolRepository.groupProtocolsByPersonIds(ids);
 
         Map<Long, List<Pair<Person, String>>> personMap = rsl.stream()
                 .collect(groupingBy(
@@ -102,7 +98,7 @@ public class RequirementCreateServiceImpl implements RequirementCreateService {
     @Override
     public ViolatorRequirementDTO groupProtocolsByViolator(String pinpp) {
         return personService.findByPinpp(pinpp).map(person -> {
-            List<ProtocolGroupByPersonDTO> protocolGroupByPersonDTOS = filterProtocolsByPerson(List.of(person.getId()), true);
+            List<ProtocolGroupByPersonDTO> protocolGroupByPersonDTOS = filterProtocolsByPerson(List.of(person.getId()));
             ProtocolGroupByPersonDTO personDTO = protocolGroupByPersonDTOS.stream().findFirst().orElseThrow(() -> new NotFoundException("Violator with pinpp: " + pinpp + " not found"));
 
             ViolatorRequirementDTO violatorRequirementDTO = generateDTO(personDTO);

@@ -130,7 +130,8 @@ public interface ProtocolRepository extends ProtocolCustomRepository, JpaReposit
             ", p.violatorDetail.violator.person as person " +
             "FROM Protocol p " +
             "WHERE " +
-            "  p.violatorDetail.violator.personId IN :ids " +
+            "p.violatorDetail.violator.personId IN :ids " +
+            "AND p.createdTime >= NOW() - INTERVAL '1 year' " +
             "ORDER BY p.createdTime DESC ")
     List<ProtocolGroupByPersonProjection> groupProtocolsByPersonIds(@Param("ids") List<Long> ids);
 
