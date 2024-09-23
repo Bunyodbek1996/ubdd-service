@@ -53,6 +53,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
@@ -87,7 +88,7 @@ public class CsvProcessorService {
     private final ArticleViolationTypeRepository articleViolationTypeRepository;
     private final PunishmentTypeRepository punishmentTypeRepository;
 
-    @Async("customTaskExecutor")
+
     public String startProcess(String filePath) {
         if (filePath.contains("_1_")) {
             return processCsv1(filePath);
@@ -294,7 +295,7 @@ public class CsvProcessorService {
 
 
 
-    //@Async("customTaskExecutor")
+    @Async("customTaskExecutor")
     @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());

@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableJpaRepositories(basePackages = {"uz.ciasev.ubdd_service.repository"})
@@ -155,10 +156,11 @@ public class AppConfig {
     @Bean(name = "customTaskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);  // Minimum number of threads in the pool
-        executor.setMaxPoolSize(20);   // Maximum number of threads in the pool
-        executor.setQueueCapacity(400); // Queue size for tasks waiting for a thread
+        executor.setCorePoolSize(40);  // Minimum number of threads in the pool
+        executor.setMaxPoolSize(60);   // Maximum number of threads in the pool
+        executor.setQueueCapacity(75); // Queue size for tasks waiting for a thread
         executor.setThreadNamePrefix("AsyncThread-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;
     }
