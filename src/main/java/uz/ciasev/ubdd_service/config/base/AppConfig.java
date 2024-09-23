@@ -155,9 +155,9 @@ public class AppConfig {
     @Bean(name = "customTaskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(400);  // Minimum number of threads in the pool
-        executor.setMaxPoolSize(450);   // Maximum number of threads in the pool
-        executor.setQueueCapacity(1000); // Queue size for tasks waiting for a thread
+        executor.setCorePoolSize(10);  // Minimum number of threads in the pool
+        executor.setMaxPoolSize(20);   // Maximum number of threads in the pool
+        executor.setQueueCapacity(400); // Queue size for tasks waiting for a thread
         executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
         return executor;
