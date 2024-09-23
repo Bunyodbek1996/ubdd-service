@@ -74,7 +74,7 @@ public class RequirementCreateServiceImpl implements RequirementCreateService {
             throw new ValidationException(ErrorCode.REQUIREMENT_SIZE_MORE_THEN_1000);
         }
 
-        List<ProtocolGroupByPersonProjection> rsl = protocolRepository.groupProtocolsByPersonIds(ids);
+        List<ProtocolGroupByPersonProjection> rsl = protocolRepository.groupProtocolsByPersonIds(ids, LocalDateTime.now().minusYears(1));
 
         Map<Long, List<Pair<Person, String>>> personMap = rsl.stream()
                 .collect(groupingBy(
