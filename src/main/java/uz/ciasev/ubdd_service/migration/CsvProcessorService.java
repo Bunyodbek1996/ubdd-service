@@ -291,8 +291,8 @@ public class CsvProcessorService {
 
 
 
-//    @Async("customTaskExecutor")
-//    @Transactional
+    @Async("customTaskExecutor")
+    @Transactional
     private void saveToDatabase(ProtocolData protocolData) {
         GaiExportTemporary exported = gaiExportTemporaryRepository.findByExId(protocolData.getProtocol_externalId());
         if (exported != null) {
