@@ -55,7 +55,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableJpaRepositories(basePackages = {"uz.ciasev.ubdd_service.repository"})
 @EntityScan(basePackages = "uz.ciasev.ubdd_service.entity", basePackageClasses = Jsr310JpaConverters.class)
 @EnableJpaAuditing
-@EnableAsync
+//@EnableAsync
 @EnableTransactionManagement(order = 1000)
 public class AppConfig {
 
@@ -153,27 +153,27 @@ public class AppConfig {
         return new ModelMapper();
     }
 
-    @Bean(name = "customTaskExecutor")
-    public Executor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(40);  // Minimum number of threads in the pool
-        executor.setMaxPoolSize(60);   // Maximum number of threads in the pool
-        executor.setQueueCapacity(75); // Queue size for tasks waiting for a thread
-        executor.setThreadNamePrefix("AsyncThread-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.initialize();
-        return executor;
-    }
+//    @Bean(name = "customTaskExecutor")
+//    public Executor taskExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(40);  // Minimum number of threads in the pool
+//        executor.setMaxPoolSize(60);   // Maximum number of threads in the pool
+//        executor.setQueueCapacity(75); // Queue size for tasks waiting for a thread
+//        executor.setThreadNamePrefix("AsyncThread-");
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        executor.initialize();
+//        return executor;
+//    }
 
     @Bean(name = "randomNumberUntil1000")
     public Random randomNumberUntil1000() {
         return new Random();
     }
 
-    @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
+//    @Bean
+//    public RequestContextListener requestContextListener() {
+//        return new RequestContextListener();
+//    }
 
 
 }
