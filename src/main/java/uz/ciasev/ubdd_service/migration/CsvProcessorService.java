@@ -116,6 +116,7 @@ public class CsvProcessorService {
                 try {
                     saveToDatabase(row);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     collectToListAndSaveSomeFile(e.getMessage());
                 }
                 csvFile1++;
