@@ -107,8 +107,7 @@ public class CsvProcessorService {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
-                    //.withIgnoreLeadingWhiteSpace(true)
-                    //.withThrowExceptions(false)  // Don't throw exceptions for invalid lines
+                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
                     .withSeparator(',')
                     .build();
 
@@ -151,8 +150,7 @@ public class CsvProcessorService {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
-                    //.withIgnoreLeadingWhiteSpace(true)
-                    //.withThrowExceptions(false)  // Don't throw exceptions for invalid lines
+                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
                     .withSeparator(',')
                     .build();
 
@@ -194,8 +192,7 @@ public class CsvProcessorService {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
-                    //.withIgnoreLeadingWhiteSpace(true)
-                    //.withThrowExceptions(false)  // Don't throw exceptions for invalid lines
+                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
                     .withSeparator(',')
                     .build();
 
@@ -237,8 +234,7 @@ public class CsvProcessorService {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
                     .withType(ProtocolData.class)
-                    //.withIgnoreLeadingWhiteSpace(true)
-                    //.withThrowExceptions(false)  // Don't throw exceptions for invalid lines
+                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
                     .withSeparator(',')
                     .build();
 
