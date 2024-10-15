@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uz.ciasev.ubdd_service.config.db.DataSourceRouting;
 import uz.ciasev.ubdd_service.config.security.SecurityConstants;
 import uz.ciasev.ubdd_service.dto.internal.ViolatorRequirementDTO;
 import uz.ciasev.ubdd_service.service.document.generated.RequirementCreateServiceImpl;
@@ -27,20 +28,35 @@ public class UbddRequirementController {
 
     @GetMapping(path = "/requirement")
     public ResponseEntity<ViolatorRequirementDTO> requirement(@RequestParam("violator_pinpp") @Valid @NotBlank String violatorPinpp) {
-        return ResponseEntity.ok(requirementService.groupProtocolsByViolator(violatorPinpp));
+        try {
+            DataSourceRouting.setDataSource("postgresDataSourceForReadOnly");
+            return ResponseEntity.ok(requirementService.groupProtocolsByViolator(violatorPinpp));
+        } finally {
+            DataSourceRouting.setDataSource("postgres");
+        }
     }
 
     @GetMapping(path = "/pdf/requirement")
     public ResponseEntity<?> ubddRequirement(@RequestParam(value = "violator_pinpp", required = false) @Valid @NotBlank String violatorPinpp,
                                              @RequestParam(value = "vehicle_number", required = false) @Valid @NotBlank String vehicleNumber) {
-        return ResponseEntity.ok(
-                Optional.ofNullable(violatorPinpp).map(requirementService::groupUbddProtocolsByViolator)
-                        .orElse(Optional.ofNullable(vehicleNumber).map(requirementService::groupUbddProtocolsByVehicle)
-                                .orElse(List.of())));
+        try {
+            DataSourceRouting.setDataSource("postgresDataSourceForReadOnly");
+            return ResponseEntity.ok(
+                    Optional.ofNullable(violatorPinpp).map(requirementService::groupUbddProtocolsByViolator)
+                            .orElse(Optional.ofNullable(vehicleNumber).map(requirementService::groupUbddProtocolsByVehicle)
+                                    .orElse(List.of())));
+        } finally {
+            DataSourceRouting.setDataSource("postgres");
+        }
     }
 
     @GetMapping(path = "/wanted-cards-with-arrest")
     public ResponseEntity<?> searchWantedCard(@RequestParam("vehicle_number") @Valid @NotBlank String vehicleNumber) {
-        return ResponseEntity.ok(requirementService.groupWantedVehicleBy(vehicleNumber));
+        try {
+            DataSourceRouting.setDataSource("postgresDataSourceForReadOnly");
+            return ResponseEntity.ok(requirementService.groupWantedVehicleBy(vehicleNumber));
+        } finally {
+            DataSourceRouting.setDataSource("postgres");
+        }
     }
 }

@@ -1,22 +1,18 @@
 package uz.ciasev.ubdd_service.service.main.resolution;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.ciasev.ubdd_service.mvd_core.api.court.CourtEventHolder;
-import uz.ciasev.ubdd_service.config.base.CiasevDBConstraint;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.court.CourtDecisionRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.court.CourtEvidenceDecisionRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.court.CourtResolutionRequestDTO;
-import uz.ciasev.ubdd_service.entity.evidence.Evidence;
 import uz.ciasev.ubdd_service.entity.ExternalInspector;
 import uz.ciasev.ubdd_service.entity.Place;
 import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
 import uz.ciasev.ubdd_service.entity.court.CourtInvoiceSending;
 import uz.ciasev.ubdd_service.entity.dict.resolution.ReasonCancellationAlias;
-import uz.ciasev.ubdd_service.entity.resolution.*;
+import uz.ciasev.ubdd_service.entity.resolution.Resolution;
 import uz.ciasev.ubdd_service.entity.resolution.compensation.Compensation;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
 import uz.ciasev.ubdd_service.entity.settings.OrganAccountSettings;
@@ -24,13 +20,10 @@ import uz.ciasev.ubdd_service.entity.status.AdmStatusAlias;
 import uz.ciasev.ubdd_service.entity.violator.Violator;
 import uz.ciasev.ubdd_service.event.AdmEventService;
 import uz.ciasev.ubdd_service.event.AdmEventType;
-import uz.ciasev.ubdd_service.exception.ResolutionInAdmCaseAlreadyExists;
-import uz.ciasev.ubdd_service.service.publicapi.eventdata.PublicApiWebhookEventCourtDataService;
 import uz.ciasev.ubdd_service.service.admcase.AdmCaseAccessService;
 import uz.ciasev.ubdd_service.service.admcase.AdmCaseService;
 import uz.ciasev.ubdd_service.service.court.CourtInvoiceSendingOrderService;
 import uz.ciasev.ubdd_service.service.court.files.CourtFileService;
-import uz.ciasev.ubdd_service.service.evidence.EvidenceService;
 import uz.ciasev.ubdd_service.service.generator.ValueNumberGeneratorService;
 import uz.ciasev.ubdd_service.service.main.resolution.dto.CreatedDecisionDTO;
 import uz.ciasev.ubdd_service.service.main.resolution.dto.CreatedResolutionDTO;
@@ -41,19 +34,17 @@ import uz.ciasev.ubdd_service.service.resolution.evidence_decision.EvidenceDecis
 import uz.ciasev.ubdd_service.service.settings.AccountCalculatingService;
 import uz.ciasev.ubdd_service.service.status.AdmCaseStatusService;
 import uz.ciasev.ubdd_service.service.user.InspectorService;
-import uz.ciasev.ubdd_service.service.validation.ResolutionValidationService;
 import uz.ciasev.ubdd_service.service.violator.ViolatorService;
 import uz.ciasev.ubdd_service.utils.AdmEntityList;
-import uz.ciasev.ubdd_service.utils.DBHelper;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static uz.ciasev.ubdd_service.entity.action.ActionAlias.*;
+import static uz.ciasev.ubdd_service.entity.action.ActionAlias.COURT_CANCEL_RESOLUTION;
+import static uz.ciasev.ubdd_service.entity.action.ActionAlias.COURT_REVIEW_CASE;
 import static uz.ciasev.ubdd_service.entity.status.AdmStatusAlias.RETURN_FROM_COURT;
 import static uz.ciasev.ubdd_service.entity.status.AdmStatusAlias.SENT_TO_COURT;
 
@@ -172,14 +163,7 @@ public class CourtResolutionMainServiceImpl implements CourtResolutionMainServic
     @Override
     @Transactional
     public Resolution createCourtResolution(Long admCaseId, CourtResolutionRequestDTO requestDTO) {
-        try {
-            return createCourtResolutionInner(admCaseId, requestDTO);
-        } catch (DataIntegrityViolationException e) {
-            if (DBHelper.isConstraintViolation(e, CiasevDBConstraint.UniqueActiveResolutionInCase)) {
-                throw new ResolutionInAdmCaseAlreadyExists();
-            }
-            throw e;
-        }
+        return createCourtResolutionInner(admCaseId, requestDTO);
     }
 
     private Resolution createCourtResolutionInner(Long admCaseId, CourtResolutionRequestDTO requestDTO) {

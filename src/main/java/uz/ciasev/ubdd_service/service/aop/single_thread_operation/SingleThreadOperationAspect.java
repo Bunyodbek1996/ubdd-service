@@ -2,17 +2,15 @@ package uz.ciasev.ubdd_service.service.aop.single_thread_operation;
 
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import uz.ciasev.ubdd_service.config.base.CiasevDBConstraint;
 import uz.ciasev.ubdd_service.entity.single_thread_operation.SingleThreadOperationLock;
 import uz.ciasev.ubdd_service.entity.single_thread_operation.SingleThreadOperationTypeAlias;
-import uz.ciasev.ubdd_service.exception.DuplicateRequestInSingleThreadOperation;
 import uz.ciasev.ubdd_service.exception.implementation.ImplementationException;
 import uz.ciasev.ubdd_service.repository.single_thread_operation.SingleThreadOperationRepository;
-import uz.ciasev.ubdd_service.utils.DBHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -35,14 +33,7 @@ public class SingleThreadOperationAspect {
 
         SingleThreadOperationLock operationLock = new SingleThreadOperationLock(resourceId, operationType);
 
-        try {
-            singleThreadOperationRepository.saveAndFlush(operationLock);
-        } catch (DataIntegrityViolationException e) {
-            if (DBHelper.isConstraintViolation(e, CiasevDBConstraint.UniqueResourceIdOperationTypeIdPair)) {
-                throw new DuplicateRequestInSingleThreadOperation();
-            }
-            throw e;
-        }
+        singleThreadOperationRepository.saveAndFlush(operationLock);
 
         try {
             return joinPoint.proceed();
