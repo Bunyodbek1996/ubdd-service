@@ -1,6 +1,7 @@
 package uz.ciasev.ubdd_service.controller_ubdd;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.xpath.operations.Bool;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,15 +39,23 @@ public class UbddRequirementController {
 
     @GetMapping(path = "/pdf/requirement")
     public ResponseEntity<?> ubddRequirement(@RequestParam(value = "violator_pinpp", required = false) @Valid @NotBlank String violatorPinpp,
-                                             @RequestParam(value = "vehicle_number", required = false) @Valid @NotBlank String vehicleNumber) {
-        try {
-            DataSourceRouting.setDataSource("postgresDataSourceForReadOnly");
+                                             @RequestParam(value = "vehicle_number", required = false) @Valid @NotBlank String vehicleNumber,
+                                             @RequestParam(value = "from_replica", required = false, defaultValue = "false") Boolean fromReplica) {
+        if (fromReplica) {
+            try {
+                DataSourceRouting.setDataSource("postgresDataSourceForReadOnly");
+                return ResponseEntity.ok(
+                        Optional.ofNullable(violatorPinpp).map(requirementService::groupUbddProtocolsByViolator)
+                                .orElse(Optional.ofNullable(vehicleNumber).map(requirementService::groupUbddProtocolsByVehicle)
+                                        .orElse(List.of())));
+            } finally {
+                DataSourceRouting.setDataSource("postgres");
+            }
+        } else {
             return ResponseEntity.ok(
                     Optional.ofNullable(violatorPinpp).map(requirementService::groupUbddProtocolsByViolator)
                             .orElse(Optional.ofNullable(vehicleNumber).map(requirementService::groupUbddProtocolsByVehicle)
                                     .orElse(List.of())));
-        } finally {
-            DataSourceRouting.setDataSource("postgres");
         }
     }
 

@@ -63,8 +63,8 @@ clickhouse:
 reading-database:
   datasource:
     jdbc-url: jdbc:postgresql://${MVD_CIASEV_DATASOURCE_HOST_READ}:${MVD_CIASEV_DATASOURCE_PORT}/mvdciasev?serverTimezone\=UTC&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true
-    username: postgres
-    password: postgres
+    username: ${MVD_CIASEV_DATASOURCE_USERNAME}
+    password: ${MVD_CIASEV_DATASOURCE_PASSWORD}
     driverClassName: org.postgresql.Driver
 
 springdoc:
