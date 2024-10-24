@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class IBDWebhookEventProtocolDecisionDataDTO {
+    private final Long protocolId;
     private final Long caseId;
     private final Long caseStatusId;
     private final String caseStatusName;
@@ -52,6 +53,7 @@ public class IBDWebhookEventProtocolDecisionDataDTO {
         this.registeredOrgan = new Organ(p);
         this.createdTime = p.getCreatedTime();
         this.violationTime = p.getCreatedTime();
+        this.protocolId = p.getProtocolId();
         this.caseId = p.getAdmCaseId();
         this.caseStatusId = p.getCaseStatusId();
         this.caseStatusName = p.getCaseStatusName();
