@@ -32,12 +32,17 @@ spring:
 
   datasource:
     platform: postgres
-    url: jdbc:postgresql://${MVD_CIASEV_DATASOURCE_HOST}:${MVD_CIASEV_DATASOURCE_PORT}/mvdciasev?serverTimezone\=UTC&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true
+    jdbc-url: jdbc:postgresql://${MVD_CIASEV_DATASOURCE_HOST}:${MVD_CIASEV_DATASOURCE_PORT}/mvdciasev?serverTimezone\=UTC&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true
+    #    url: ${MVD_CIASEV_DATASOURCE_URL}
     username: ${MVD_CIASEV_DATASOURCE_USERNAME}
     password: ${MVD_CIASEV_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    driverClassName: org.postgresql.Driver
+    initialization-mode: never
     hikari:
-      maximum-pool-size: ${MVD_CIASEV_DATASOURCE_POOL_SIZE:75}
+      maximum-pool-size: 25  # Number of maximum connections in the pool
+      minimum-idle: 10        # Minimum number of idle connections in the pool
+      idle-timeout: 450000    # 5 minutes, connections idle for this time will be removed from the pool
+      connection-timeout: 20000  # 20 seconds, wait time for a connection before throwing an exception
 
   servlet:
     multipart:
@@ -47,6 +52,13 @@ spring:
   http:
     encoding:
       charset: UTF-8
+
+reading-database:
+  datasource:
+    jdbc-url: jdbc:postgresql://${MVD_CIASEV_DATASOURCE_HOST_READ}:${MVD_CIASEV_DATASOURCE_PORT}/mvdciasev?serverTimezone\=UTC&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true
+    username: ${MVD_CIASEV_DATASOURCE_USERNAME}
+    password: ${MVD_CIASEV_DATASOURCE_PASSWORD}
+    driverClassName: org.postgresql.Driver
 
 springdoc:
   api-docs:

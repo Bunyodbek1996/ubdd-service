@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.github.cage.GCage;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -31,6 +32,7 @@ import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -58,8 +60,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 @EnableTransactionManagement(order = 1000)
 public class AppConfig {
-
-    private final String dbSchema;
     private final int dbTransactionTimeout;
 
     private final String s3AccessKeyId;
@@ -69,13 +69,11 @@ public class AppConfig {
     private final String encryptionKey;
 
     @Autowired
-    public AppConfig(@Value("${spring.jpa.properties.hibernate.default_schema}") String dbSchema,
-                     @Value("${mvd-ciasev.db.default-transaction-timeout-seconds}") int dbTransactionTimeout,
+    public AppConfig(@Value("${mvd-ciasev.db.default-transaction-timeout-seconds}") int dbTransactionTimeout,
                      @Value("${mvd-ciasev.files.s3.access-key-id}") String s3AccessKeyId,
                      @Value("${mvd-ciasev.files.s3.secret-key}") String s3SecretKey,
                      @Value("${mvd-ciasev.files.s3.endpoint}") String s3Endpoint,
                      @Value("${mvd-ciasev.encryption.key}") String encryptionKey) {
-        this.dbSchema = dbSchema;
         this.dbTransactionTimeout = dbTransactionTimeout;
 
         this.s3AccessKeyId = s3AccessKeyId;
@@ -175,5 +173,22 @@ public class AppConfig {
         return new RequestContextListener();
     }
 
+    @Autowired
+    @Qualifier("postgresDataSource")
+    private DataSource dataSourceRouting;
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean em
+                = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSourceRouting);
+        em.setPackagesToScan(new String[] { "uz.ciasev.ubdd_service.entity" });
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        // Set additional JPA properties if needed
+
+        return em;
+    }
 
 }
