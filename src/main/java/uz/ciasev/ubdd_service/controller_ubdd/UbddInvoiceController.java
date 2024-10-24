@@ -31,5 +31,4 @@ public class UbddInvoiceController {
         return invoiceService.create(user, request);
     }
 
-
 }

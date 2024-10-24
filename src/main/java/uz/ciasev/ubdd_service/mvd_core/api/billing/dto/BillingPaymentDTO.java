@@ -18,10 +18,11 @@ public class BillingPaymentDTO {
     @NotNull(message = "id field required")
     private Long id;
 
-    @NotNull(message = "admCaseId field required")
     private Long admCaseId;
 
-    @NotNull(message = "externalId field required")
+    @NotNull(message = "createdByEmi field required")
+    private Boolean createdByEmi;
+
     private Long externalId;
 
     private String invoiceSerial;

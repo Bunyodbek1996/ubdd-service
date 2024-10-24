@@ -43,28 +43,28 @@ public class UbddProtocolController {
     }
 
 
-    @PostMapping(path = "/{id}/edit-qualification")
-    public void editProtocolQualification(
-            @CurrentUser User user,
-            @PathVariable Long id,
-            @Valid @RequestBody QualificationRequestDTO requestDTO) {
-        protocolMainService.editProtocolQualification(user, id, requestDTO);
-    }
-
-
-    @PostMapping("/adm-cases/{fromAdmCaseId}/merge-to/{toAdmCaseId}")
-    public AdmCaseMergeResponseDTO mergeCase(@CurrentUser User user,
-                                             @PathVariable("fromAdmCaseId") Long fromAdmCaseId,
-                                             @PathVariable("toAdmCaseId") Long toAdmCaseId) {
-        return admCaseActionService.mergeAdmCases(user, fromAdmCaseId, toAdmCaseId);
-    }
-
-
-    @PostMapping(path = "/{id}/separate")
-    public ProtocolDetailResponseDTO separateProtocolsFromAdmCase(@CurrentUser User user, @PathVariable Long id) {
-        protocolMainService.separateProtocol(user, id);
-        return protocolDTOServiceNew.buildDetail(user, () -> protocolService.findById(id));
-    }
+//    @PostMapping(path = "/{id}/edit-qualification")
+//    public void editProtocolQualification(
+//            @CurrentUser User user,
+//            @PathVariable Long id,
+//            @Valid @RequestBody QualificationRequestDTO requestDTO) {
+//        protocolMainService.editProtocolQualification(user, id, requestDTO);
+//    }
+//
+//
+//    @PostMapping("/adm-cases/{fromAdmCaseId}/merge-to/{toAdmCaseId}")
+//    public AdmCaseMergeResponseDTO mergeCase(@CurrentUser User user,
+//                                             @PathVariable("fromAdmCaseId") Long fromAdmCaseId,
+//                                             @PathVariable("toAdmCaseId") Long toAdmCaseId) {
+//        return admCaseActionService.mergeAdmCases(user, fromAdmCaseId, toAdmCaseId);
+//    }
+//
+//
+//    @PostMapping(path = "/{id}/separate")
+//    public ProtocolDetailResponseDTO separateProtocolsFromAdmCase(@CurrentUser User user, @PathVariable Long id) {
+//        protocolMainService.separateProtocol(user, id);
+//        return protocolDTOServiceNew.buildDetail(user, () -> protocolService.findById(id));
+//    }
 
 
 }

@@ -56,8 +56,19 @@ public class UserAdmResolutionServiceImpl implements UserAdmResolutionService {
     @DigitalSignatureCheck(event = SignatureEvent.RESOLUTION)
     public CreatedSingleResolutionDTO createSingle(User user, Long externalId, SingleResolutionRequestDTO requestDTO) {
 
-        Protocol protocol = protocolService.findByExternalId(user, String.valueOf(externalId));
-        AdmCase admCase = admCaseService.getByProtocolId(protocol.getId());
+        AdmCase admCase;
+        if (requestDTO.getCreatedByEmi()) {
+            if (requestDTO.getAdmCaseId() == null) {
+                throw new IllegalArgumentException("admCaseId is required while createdByEmi is true");
+            }
+            admCase = admCaseService.getById(requestDTO.getAdmCaseId());
+        } else {
+            if (requestDTO.getExternalId() == null) {
+                throw new IllegalArgumentException("externalId is required while createdByEmi is false");
+            }
+            Protocol protocol = protocolService.findByExternalId(user, String.valueOf(externalId));
+            admCase = admCaseService.getByProtocolId(protocol.getId());
+        }
 
         Optional<Decision> optionalDecision = resolutionService.getDecisionOfResolutionById(admCase.getId());
         if (optionalDecision.isPresent() && optionalDecision.get().isActive()) {

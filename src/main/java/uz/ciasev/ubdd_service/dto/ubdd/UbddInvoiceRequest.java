@@ -12,8 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UbddInvoiceRequest {
 
-    @NotNull(message = "externalId is required")
     private Long externalId;
+
+    @NotNull(message = "createdByEmi is required")
+    private Boolean createdByEmi;
+
+    private Long admCaseId;
 
     private Boolean isDiscount70;
 

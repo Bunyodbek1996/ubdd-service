@@ -8,6 +8,7 @@ import uz.ciasev.ubdd_service.entity.resolution.Resolution;
 import uz.ciasev.ubdd_service.entity.status.AdmStatus;
 import uz.ciasev.ubdd_service.entity.status.AdmStatusAlias;
 import uz.ciasev.ubdd_service.entity.user.User;
+import uz.ciasev.ubdd_service.exception.implementation.LogicalException;
 import uz.ciasev.ubdd_service.exception.notfound.EntityByParamsNotFound;
 import uz.ciasev.ubdd_service.mvd_core.api.billing.dto.BillingPaymentDTO;
 import uz.ciasev.ubdd_service.entity.invoice.Invoice;
@@ -113,9 +114,29 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
 
         Payment savedPayment = paymentService.save(invoice, paymentDTO);
 
-        PenaltyPunishment penaltyPunishment = penaltyPunishmentRepository
-                .findPenaltyPunishmentIdByExternalIdAndOrganId(paymentDTO.getExternalId() + "", user.getOrganId())
-                .orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "externalId", paymentDTO.getExternalId(), "organId", user.getOrganId()));
+        PenaltyPunishment penaltyPunishment;
+        if (paymentDTO.getCreatedByEmi()) {
+            if (paymentDTO.getAdmCaseId() == null) {
+                throw new LogicalException("admCaseId not found while createdByEmi is true");
+            }
+            penaltyPunishment = penaltyPunishmentRepository
+                    .findPenaltyPunishmentByAdmCaseId(paymentDTO.getAdmCaseId())
+                    .orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "admCaseId", paymentDTO.getAdmCaseId()));
+        } else {
+            if (paymentDTO.getExternalId() == null) {
+                throw new LogicalException("externalId not found while createdByEmi is false");
+            }
+            penaltyPunishment = penaltyPunishmentRepository
+                    .findPenaltyPunishmentByExternalIdAndOrganId(paymentDTO.getExternalId() + "", user.getOrganId())
+                    .orElseThrow(
+                            () -> new EntityByParamsNotFound(
+                                    PenaltyPunishment.class,
+                                    "externalId",
+                                    paymentDTO.getExternalId(),
+                                    "organId", user.getOrganId()
+                            )
+                    );
+        }
 
         penaltyPunishment.setPaidAmount(penaltyPunishment.getPaidAmount() + savedPayment.getAmount());
         penaltyPunishment.setLastPayTime(paymentDTO.getPaidAt());

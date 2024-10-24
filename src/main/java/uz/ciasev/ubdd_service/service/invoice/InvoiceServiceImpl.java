@@ -53,10 +53,29 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setBankCode("0000");
         invoice.setBankAccount("0000");
 
-        PenaltyPunishment penaltyPunishment = penaltyPunishmentRepository
-                .findPenaltyPunishmentIdByExternalIdAndOrganId(
-                        request.getExternalId() + "", user.getOrganId()
-                ).orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "externalId", request.getExternalId(), "organId", user.getOrganId()));
+        PenaltyPunishment penaltyPunishment;
+        if (request.getCreatedByEmi()) {
+            if (request.getAdmCaseId() == null) {
+                throw new LogicalException("admCaseId not found while createdByEmi is true");
+            }
+            penaltyPunishment = penaltyPunishmentRepository
+                    .findPenaltyPunishmentByAdmCaseId(request.getAdmCaseId())
+                    .orElseThrow(() -> new EntityByParamsNotFound(PenaltyPunishment.class, "admCaseId", request.getAdmCaseId()));
+        } else {
+            if (request.getExternalId() == null) {
+                throw new LogicalException("externalId not found while createdByEmi is false");
+            }
+            penaltyPunishment = penaltyPunishmentRepository
+                    .findPenaltyPunishmentByExternalIdAndOrganId(request.getExternalId() + "", user.getOrganId())
+                    .orElseThrow(
+                            () -> new EntityByParamsNotFound(
+                                    PenaltyPunishment.class,
+                                    "externalId",
+                                    request.getExternalId(),
+                                    "organId", user.getOrganId()
+                            )
+                    );
+        }
 
         invoice.setPenaltyPunishment(penaltyPunishment);
 
@@ -68,23 +87,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Invoice findById(Long id) {
         return invoiceRepository.findById(id).orElseThrow(() -> new EntityByIdNotFound(Invoice.class, id));
-    }
-
-    @Override
-    public InvoiceResponseDTO findDTOById(Long id) {
-        return new InvoiceResponseDTO(findById(id));
-    }
-
-    @Override
-    public Invoice findByBillingId(Long id) {
-        return invoiceRepository
-                .findByInvoiceId(id)
-                .orElseThrow(() -> new EntityByParamsNotFound(Invoice.class, "invoiceId", id));
-    }
-
-    @Override
-    public Invoice update(Invoice invoice) {
-        return invoiceRepository.save(invoice);
     }
 
     @Override
@@ -124,9 +126,4 @@ public class InvoiceServiceImpl implements InvoiceService {
         );
     }
 
-    @Override
-    public Invoice findInvoiceByExternalIdAndOrganId(Long externalId, Long organId) {
-        return invoiceRepository.findInvoiceByExternalIdAndOrganId(externalId + "", organId)
-                .orElseThrow(() -> new EntityByParamsNotFound(Invoice.class, "externalId", externalId, "organId", organId));
-    }
 }

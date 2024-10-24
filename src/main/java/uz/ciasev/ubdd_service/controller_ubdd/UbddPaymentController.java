@@ -28,5 +28,4 @@ public class UbddPaymentController {
         billingExecutionService.handlePayment(user, request);
     }
 
-
 }

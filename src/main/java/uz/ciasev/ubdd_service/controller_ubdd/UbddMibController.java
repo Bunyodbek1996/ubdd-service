@@ -29,29 +29,29 @@ public class UbddMibController {
     private final MibApiExecutionService mibApiExecutionService;
     private final MibApiAdmService mibApiAdmService;
 
-    @PostMapping("/sent")
-    public void postSendGeneral(@RequestBody @Valid MibResult mibResult) {
-        mibAutoSendService.send(mibResult.getAdmCaseId(), mibResult);
-    }
-
-
-    @PostMapping("/execute")
-    public MvdExecutionResponseDTO acceptCourtResolution(@RequestBody @Valid MibRequestDTO result) {
-
-        if (Objects.nonNull(result.getEnvelopeId()) && Objects.nonNull(result.getOffenseId())) {
-            throw new ValidationException(ErrorCode.MIB_DOCUMENT_ID_AMBIGUOUS);
-        }
-
-        if (Objects.nonNull(result.getEnvelopeId())) {
-            return mibApiExecutionService.executionResultWebhook(result.getEnvelopeId(), result);
-        }
-
-        if (Objects.nonNull(result.getOffenseId())) {
-            mibApiAdmService.execution(result.getOffenseId(), result);
-            return new MvdExecutionResponseDTO();
-        }
-
-        throw new ValidationException(ErrorCode.MIB_DOCUMENT_ID_EMPTY);
-    }
+//    @PostMapping("/sent")
+//    public void postSendGeneral(@RequestBody @Valid MibResult mibResult) {
+//        mibAutoSendService.send(mibResult.getAdmCaseId(), mibResult);
+//    }
+//
+//
+//    @PostMapping("/execute")
+//    public MvdExecutionResponseDTO acceptCourtResolution(@RequestBody @Valid MibRequestDTO result) {
+//
+//        if (Objects.nonNull(result.getEnvelopeId()) && Objects.nonNull(result.getOffenseId())) {
+//            throw new ValidationException(ErrorCode.MIB_DOCUMENT_ID_AMBIGUOUS);
+//        }
+//
+//        if (Objects.nonNull(result.getEnvelopeId())) {
+//            return mibApiExecutionService.executionResultWebhook(result.getEnvelopeId(), result);
+//        }
+//
+//        if (Objects.nonNull(result.getOffenseId())) {
+//            mibApiAdmService.execution(result.getOffenseId(), result);
+//            return new MvdExecutionResponseDTO();
+//        }
+//
+//        throw new ValidationException(ErrorCode.MIB_DOCUMENT_ID_EMPTY);
+//    }
 
 }

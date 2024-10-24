@@ -19,7 +19,15 @@ public interface PenaltyPunishmentRepository extends JpaRepository<PenaltyPunish
             "JOIN core_v0.penalty_punishment pp ON pp.punishment_id = pun.id " +
             "WHERE p.external_id = :externalId " +
             "AND p.organ_id = :organId", nativeQuery = true)
-    Optional<PenaltyPunishment> findPenaltyPunishmentIdByExternalIdAndOrganId(String externalId, Long organId);
+    Optional<PenaltyPunishment> findPenaltyPunishmentByExternalIdAndOrganId(String externalId, Long organId);
+
+    @Query(value = "SELECT pp.* " +
+            "FROM core_v0.resolution r " +
+            "JOIN core_v0.decision d ON d.resolution_id = r.id " +
+            "JOIN core_v0.punishment pun ON pun.decision_id = d.id " +
+            "JOIN core_v0.penalty_punishment pp ON pp.punishment_id = pun.id " +
+            "WHERE r.adm_case_id = :admCaseId", nativeQuery = true)
+    Optional<PenaltyPunishment> findPenaltyPunishmentByAdmCaseId(Long admCaseId);
 
 
 }

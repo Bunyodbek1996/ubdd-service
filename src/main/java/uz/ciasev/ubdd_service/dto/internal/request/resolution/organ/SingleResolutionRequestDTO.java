@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import org.apache.xpath.operations.Bool;
 import uz.ciasev.ubdd_service.dto.internal.request.ArticleRequest;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.DecisionRequestDTO;
 import uz.ciasev.ubdd_service.dto.internal.request.resolution.PunishmentRequestDTO;
@@ -38,8 +39,12 @@ import java.util.Optional;
 @ValidDecision
 public class SingleResolutionRequestDTO implements DecisionRequestDTO, ResolutionRequestDTO, ArticleRequest {
 
-    @NotNull(message = ErrorCode.EXTERNAL_ID_REQUIRED)
     private Long externalId;
+
+    @NotNull(message = "createdByEmi is required")
+    private Boolean createdByEmi;
+
+    private Long admCaseId;
 
     @NotNull(message = "CONSIDER_USER_INFO_REQUIRED")
     private String considerUserInfo;
@@ -71,9 +76,6 @@ public class SingleResolutionRequestDTO implements DecisionRequestDTO, Resolutio
 
     @NotNull(message = "RESOLUTION_TIME_REQUIRED")
     private LocalDateTime resolutionTime;
-
-    @NotNull(message = "ADM_CASE_ID_REQUIRED")
-    private Long admCaseId;
 
     @Getter(AccessLevel.NONE)
     @NotNull(message = ErrorCode.DECISION_TYPE_ID_REQUIRED)

@@ -26,13 +26,10 @@ public class ProtocolCreateServiceCore implements ProtocolCreateService {
     private final AdmCaseService admCaseService;
     private final ProtocolRepository protocolRepository;
     private final ProtocolBaseCreateService baseCreateService;
-    private final ProtocolCreateAdditionalValidationService protocolCreateAdditionalValidationService;
 
     @Override
     @Transactional
     public Protocol createElectronProtocol(User user, ProtocolRequestDTO protocolDTO) {
-
-        protocolCreateAdditionalValidationService.validateExternalId(protocolDTO);
 
         Protocol protocolByExternalId = findByExternalId(user, protocolDTO);
         if (protocolByExternalId != null) {
@@ -49,7 +46,7 @@ public class ProtocolCreateServiceCore implements ProtocolCreateService {
 
     private Protocol findByExternalId(User user, ProtocolRequestDTO protocolDTO) {
         if (protocolDTO.getExternalId() == null) {
-            return null;
+            throw new IllegalArgumentException("externalId can't be null");
         }
         return protocolRepository.findByExternalIdAndOrganId(protocolDTO.getExternalId(), user.getOrganId()).orElse(null);
     }

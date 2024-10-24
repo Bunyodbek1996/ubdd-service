@@ -15,12 +15,6 @@ public interface InvoiceService {
 
     Invoice findById(Long id);
 
-    InvoiceResponseDTO findDTOById(Long id);
-
-    Invoice findByBillingId(Long id);
-
-    Invoice update(Invoice invoice);
-
     Decision getInvoiceDecision(Invoice invoice);
 
     Optional<Invoice> findByPenalty(PenaltyPunishment penalty);
@@ -31,5 +25,4 @@ public interface InvoiceService {
 
     Invoice findByAdmCaseId(Long id);
 
-    Invoice findInvoiceByExternalIdAndOrganId(Long externalId, Long organId);
 }

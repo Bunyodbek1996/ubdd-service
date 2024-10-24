@@ -28,24 +28,24 @@ public class UbddViolatorController {
 
 
 
-    @PutMapping("/{violatorId}/protocol/{protocolId}")
-    public ViolatorDetail updateDetails(@CurrentUser User user,
-                                        @PathVariable(name = "violatorId") Long violatorId,
-                                        @PathVariable(name = "protocolId") Long protocolId,
-                                        @RequestBody @Valid ViolatorDetailRequestDTO requestDTO) {
-
-        return violatorDetailService.updateViolatorDetail(user, violatorId, protocolId, requestDTO);
-    }
-
-
-
-
-    @PutMapping("/{violatorId}/edit-actual-address")
-    public void updateActualAddress(@CurrentUser User user,
-                                    @PathVariable(name = "violatorId") Long violatorId,
-                                    @RequestBody @Valid @UzbAddress(message = ErrorCode.VIOLATOR_POST_ADDRESS_MAST_CONTENT_REGION_AND_DISTRICT) SingleAddressRequestDTO requestDTO) {
-
-        violatorService.updateViolatorActualAddress(user, violatorId, requestDTO);
-    }
+//    @PutMapping("/{violatorId}/protocol/{protocolId}")
+//    public ViolatorDetail updateDetails(@CurrentUser User user,
+//                                        @PathVariable(name = "violatorId") Long violatorId,
+//                                        @PathVariable(name = "protocolId") Long protocolId,
+//                                        @RequestBody @Valid ViolatorDetailRequestDTO requestDTO) {
+//
+//        return violatorDetailService.updateViolatorDetail(user, violatorId, protocolId, requestDTO);
+//    }
+//
+//
+//
+//
+//    @PutMapping("/{violatorId}/edit-actual-address")
+//    public void updateActualAddress(@CurrentUser User user,
+//                                    @PathVariable(name = "violatorId") Long violatorId,
+//                                    @RequestBody @Valid @UzbAddress(message = ErrorCode.VIOLATOR_POST_ADDRESS_MAST_CONTENT_REGION_AND_DISTRICT) SingleAddressRequestDTO requestDTO) {
+//
+//        violatorService.updateViolatorActualAddress(user, violatorId, requestDTO);
+//    }
 
 }

@@ -25,22 +25,22 @@ public class UbddCourtController {
 
     private final CourtWebhookService courtWebhookService;
 
-    @PostMapping("/sent")
-    public void postSendGeneral(@RequestBody @Valid UbddCourtRequest request) {
-        ubddCourtService.sentCourt(request);
-    }
-
-
-    @PostMapping("/resolution")
-    public void acceptCourtResolution(@RequestBody @Valid ThirdCourtResolutionRequestDTO request) {
-        ubddCourtService.acceptUbddCourtResolution(request);
-    }
-
-    @GetMapping("/decision-for-315")
-    public EightCourtResolutionRequestDTO findResolutionBySeriesAndNumber(@RequestParam(name = "series") String series,
-                                                           @RequestParam(name = "number") String number) {
-        CourtRequestDTO<EightCourtResolutionRequestDTO> response = courtWebhookService.acceptEightMethod(series, number);
-        return response.getSendDocumentRequest();
-    }
+//    @PostMapping("/sent")
+//    public void postSendGeneral(@RequestBody @Valid UbddCourtRequest request) {
+//        ubddCourtService.sentCourt(request);
+//    }
+//
+//
+//    @PostMapping("/resolution")
+//    public void acceptCourtResolution(@RequestBody @Valid ThirdCourtResolutionRequestDTO request) {
+//        ubddCourtService.acceptUbddCourtResolution(request);
+//    }
+//
+//    @GetMapping("/decision-for-315")
+//    public EightCourtResolutionRequestDTO findResolutionBySeriesAndNumber(@RequestParam(name = "series") String series,
+//                                                           @RequestParam(name = "number") String number) {
+//        CourtRequestDTO<EightCourtResolutionRequestDTO> response = courtWebhookService.acceptEightMethod(series, number);
+//        return response.getSendDocumentRequest();
+//    }
 
 }
