@@ -1,5 +1,9 @@
 package uz.ciasev.ubdd_service.migration;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
@@ -53,7 +57,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
@@ -63,10 +66,8 @@ public class CsvProcessorService {
     private static final DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public static Integer csvFile1 = 0;
-    public static Integer csvFile2 = 0;
-    public static Integer csvFile3 = 0;
-    public static Integer csvFileOther = 0;
+    public static Integer csvFile = 0;
+    public static Integer jsonFile = 0;
 
     private final UserRepository userRepository;
     private final ProtocolDTOService protocolDTOService;
@@ -90,61 +91,40 @@ public class CsvProcessorService {
 
 
     public String startProcess(String filePath) {
-        if (filePath.contains("_1_")) {
-            return processCsv1(filePath);
-        } else if (filePath.contains("_2_")) {
-            return processCsv2(filePath);
-        } else if (filePath.contains("_3_")) {
-            return processCsv3(filePath);
-        } else {
-            return processCsvOther(filePath);
-        }
+        return processLargeJson(filePath);
     }
 
-    private String processCsv1(String filePath) {
-        csvFile1 = 0;
-        try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
+    public String processLargeJson(String filePath) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectReader reader = mapper.readerFor(ProtocolData.class); // ObjectReader tezroq ishlaydi
+        jsonFile = 0;
 
-            CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
-                    .withType(ProtocolData.class)
-                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
-                    .withSeparator(',')
-                    .build();
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath));
+             JsonParser parser = mapper.getFactory().createParser(inputStream)) {
 
-            for (ProtocolData row : csvToBean) {
+
+            if (parser.nextToken() != JsonToken.START_ARRAY) {
+                return "Invalid JSON format: Expected array at the root";
+            }
+
+            while (parser.nextToken() == JsonToken.START_OBJECT) {
                 try {
+                    ProtocolData row = reader.readValue(parser);
                     saveToDatabase(row);
+                    jsonFile++;
                 } catch (Exception e) {
-                    collectToListAndSaveSomeFile(e.getMessage());
-                }
-                csvFile1++;
-            }
-
-
-            List<CsvException> exceptions = new ArrayList<>(csvToBean.getCapturedExceptions());
-            for (CsvException csvException : exceptions) {
-                String[] fields = csvException.getLine();  // Split using comma
-                if (fields.length > 0) {
-                    String firstField = fields[0];
-                    GaiExportTemporary gaiExportTemporary = gaiExportTemporaryRepository.findByExId(firstField);
-                    if (gaiExportTemporary != null) {
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    } else {
-                        gaiExportTemporary = new GaiExportTemporary(firstField);
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    }
-                    gaiExportTemporaryRepository.save(gaiExportTemporary);
+                    System.err.println("Error processing record: " + e.getMessage());
                 }
             }
-
         } catch (Exception e) {
-            return e.getCause().toString();
+            return "Error: " + (e.getCause() != null ? e.getCause().toString() : e.getMessage());
         }
-        return "SUCCESS";
+
+        return "SUCCESS. Processed " + jsonFile + " records.";
     }
 
-    private String processCsv2(String filePath) {
-        csvFile2 = 0;
+    private String processCsv(String filePath) {
+        csvFile = 0;
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
 
             CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
@@ -159,91 +139,7 @@ public class CsvProcessorService {
                 } catch (Exception e) {
                     collectToListAndSaveSomeFile(e.getMessage());
                 }
-                csvFile2++;
-            }
-
-
-            List<CsvException> exceptions = new ArrayList<>(csvToBean.getCapturedExceptions());
-            for (CsvException csvException : exceptions) {
-                String[] fields = csvException.getLine();  // Split using comma
-                if (fields.length > 0) {
-                    String firstField = fields[0];
-                    GaiExportTemporary gaiExportTemporary = gaiExportTemporaryRepository.findByExId(firstField);
-                    if (gaiExportTemporary != null) {
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    } else {
-                        gaiExportTemporary = new GaiExportTemporary(firstField);
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    }
-                    gaiExportTemporaryRepository.save(gaiExportTemporary);
-                }
-            }
-
-        } catch (Exception e) {
-            return e.getCause().toString();
-        }
-        return "SUCCESS";
-    }
-
-    private String processCsv3(String filePath) {
-        csvFile3 = 0;
-        try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
-
-            CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
-                    .withType(ProtocolData.class)
-                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
-                    .withSeparator(',')
-                    .build();
-
-            for (ProtocolData row : csvToBean) {
-                try {
-                    saveToDatabase(row);
-                } catch (Exception e) {
-                    collectToListAndSaveSomeFile(e.getMessage());
-                }
-                csvFile3++;
-            }
-
-
-            List<CsvException> exceptions = new ArrayList<>(csvToBean.getCapturedExceptions());
-            for (CsvException csvException : exceptions) {
-                String[] fields = csvException.getLine();  // Split using comma
-                if (fields.length > 0) {
-                    String firstField = fields[0];
-                    GaiExportTemporary gaiExportTemporary = gaiExportTemporaryRepository.findByExId(firstField);
-                    if (gaiExportTemporary != null) {
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    } else {
-                        gaiExportTemporary = new GaiExportTemporary(firstField);
-                        gaiExportTemporary.attachResult(false, csvException.getMessage() + " " + csvException.getLineNumber() + " in " + filePath);
-                    }
-                    gaiExportTemporaryRepository.save(gaiExportTemporary);
-                }
-            }
-
-        } catch (Exception e) {
-            return e.getCause().toString();
-        }
-        return "SUCCESS";
-    }
-
-    private String processCsvOther(String filePath) {
-        csvFileOther = 0;
-        try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
-
-            CsvToBean<ProtocolData> csvToBean = new CsvToBeanBuilder<ProtocolData>(reader)
-                    .withType(ProtocolData.class)
-                    .withThrowExceptions(false)  // Don't throw exceptions for invalid lines
-                    .withSeparator(',')
-                    .build();
-
-            for (ProtocolData row : csvToBean) {
-                try {
-                    saveToDatabase(row);
-                } catch (Exception e) {
-                    collectToListAndSaveSomeFile(e.getMessage());
-                }
-                csvFileOther++;
+                csvFile++;
             }
 
 
@@ -288,7 +184,6 @@ public class CsvProcessorService {
             e.printStackTrace();
         }
     }
-
 
 
     @Async("customTaskExecutor")
