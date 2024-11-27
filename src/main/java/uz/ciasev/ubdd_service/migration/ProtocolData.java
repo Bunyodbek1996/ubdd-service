@@ -1,7 +1,9 @@
 package uz.ciasev.ubdd_service.migration;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opencsv.bean.CsvCustomBindByName;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProtocolData {
 
     @CsvCustomBindByName(column = "protocol_externalId", converter = NullValueConverter.class)
@@ -163,6 +165,9 @@ public class ProtocolData {
     private String protocol_violator_personDocument_givenAddress_districtId;
     @CsvCustomBindByName(column = "protocol_violator_personDocument_givenAddress_address", converter = NullValueConverter.class)
     private String protocol_violator_personDocument_givenAddress_address;
+
+    @CsvCustomBindByName(column = "resolution_status", converter = NullValueConverter.class)
+    private String resolution_status;
 
     @CsvCustomBindByName(column = "resolution_externalId", converter = NullValueConverter.class)
     private String resolution_externalId;

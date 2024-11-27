@@ -115,7 +115,7 @@ public class BillingExecutionServiceImpl implements BillingExecutionService {
         Payment savedPayment = paymentService.save(invoice, paymentDTO);
 
         PenaltyPunishment penaltyPunishment;
-        if (paymentDTO.getCreatedByEmi()) {
+        if (paymentDTO.getCreatedByEmi() != null && paymentDTO.getCreatedByEmi()) {
             if (paymentDTO.getAdmCaseId() == null) {
                 throw new LogicalException("admCaseId not found while createdByEmi is true");
             }

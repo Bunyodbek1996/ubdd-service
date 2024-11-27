@@ -57,7 +57,7 @@ public class UserAdmResolutionServiceImpl implements UserAdmResolutionService {
     public CreatedSingleResolutionDTO createSingle(User user, Long externalId, SingleResolutionRequestDTO requestDTO) {
 
         AdmCase admCase;
-        if (requestDTO.getCreatedByEmi()) {
+        if (requestDTO.getCreatedByEmi() != null && requestDTO.getCreatedByEmi()) {
             if (requestDTO.getAdmCaseId() == null) {
                 throw new IllegalArgumentException("admCaseId is required while createdByEmi is true");
             }

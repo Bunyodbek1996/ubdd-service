@@ -54,7 +54,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setBankAccount("0000");
 
         PenaltyPunishment penaltyPunishment;
-        if (request.getCreatedByEmi()) {
+        if (request.getCreatedByEmi() != null && request.getCreatedByEmi()) {
             if (request.getAdmCaseId() == null) {
                 throw new LogicalException("admCaseId not found while createdByEmi is true");
             }
