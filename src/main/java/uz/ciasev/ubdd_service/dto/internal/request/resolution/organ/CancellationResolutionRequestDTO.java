@@ -15,13 +15,14 @@ import java.time.LocalDateTime;
 @Data
 public class CancellationResolutionRequestDTO {
 
+    @NotNull(message = "externalId is required")
+    private Long externalId;
+
     @NotNull(message = ErrorCode.CANCELLATION_REASON_REQUIRED)
-    @ActiveOnly(message = ErrorCode.CANCELLATION_REASON_DEACTIVATED)
     @JsonProperty(value = "reasonCancellationId")
     private ReasonCancellation reasonCancellation;
 
     @NotNull(message = ErrorCode.ORGAN_CANCELLATION_REQUIRED)
-    @ActiveOnly(message = ErrorCode.ORGAN_CANCELLATION_DEACTIVATED)
     @JsonProperty(value = "organCancellationId")
     private OrganCancellation organCancellation;
 

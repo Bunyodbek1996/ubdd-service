@@ -49,6 +49,7 @@ import static uz.ciasev.ubdd_service.entity.action.ActionAlias.*;
 import static uz.ciasev.ubdd_service.entity.invoice.InvoiceDeactivateReasonAlias.DECISION_IN_REVIEW;
 import static uz.ciasev.ubdd_service.entity.invoice.InvoiceDeactivateReasonAlias.RESOLUTION_CANCELED;
 import static uz.ciasev.ubdd_service.entity.status.AdmStatusAlias.CONSIDERING;
+import static uz.ciasev.ubdd_service.entity.status.AdmStatusAlias.EXECUTED;
 
 @Slf4j
 @Service
@@ -75,8 +76,8 @@ public class ResolutionServiceActionImpl implements ResolutionActionService {
     @Override
     @Transactional
     @DigitalSignatureCheck(event = SignatureEvent.RESOLUTION_CANCEL)
-    public CancellationResolution cancelResolutionByOrgan(User user, Long id, CancellationResolutionRequestDTO dto) {
-        return cancelResolution(user, id, dto);
+    public void cancelResolutionByOrgan(User user, Long externalId, CancellationResolutionRequestDTO dto) {
+        cancelResolution(user, externalId, dto);
     }
 
     @Override
@@ -262,8 +263,8 @@ public class ResolutionServiceActionImpl implements ResolutionActionService {
     }
 
     @Transactional
-    private CancellationResolution cancelResolution(User user, Long admCaseId, CancellationResolutionRequestDTO dto) {
-        Resolution resolution = resolutionService.findActiveByAdmCaseId(admCaseId).orElseThrow(() -> new NotFoundException("Resolution not found"));
+    private CancellationResolution cancelResolution(User user, Long externalId, CancellationResolutionRequestDTO dto) {
+        Resolution resolution = resolutionService.findPenaltyPunishmentByExternalIdAndOrganId(String.valueOf(externalId), 12L).orElseThrow(() -> new NotFoundException("Resolution not found with id: " + externalId));
         AdmCase admCase = resolution.getAdmCase();
 
         List<Decision> decisions = decisionService.findByResolutionId(resolution.getId());
@@ -279,7 +280,7 @@ public class ResolutionServiceActionImpl implements ResolutionActionService {
                 .user(user)
                 .build();
 
-        caseStatusService.setStatus(admCase, CONSIDERING);
+        caseStatusService.setStatus(admCase, EXECUTED);
         admCaseService.update(admCase.getId(), admCase);
 
         cancel(resolution, decisions, cancellation);

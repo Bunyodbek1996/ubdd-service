@@ -192,11 +192,8 @@ public class ResolutionServiceImpl implements ResolutionService {
     }
 
     @Override
-    public List<CancellationResolutionListResponseDTO> findCancellationsById(Long id) {
-        return cancellationResolutionService.findAllByResolutionId(id)
-                .stream()
-                .map(this::convertToCancellationDTO)
-                .collect(Collectors.toList());
+    public Optional<Resolution> findPenaltyPunishmentByExternalIdAndOrganId(String externalId, Long organId) {
+        return resolutionRepository.findResolutionByExternalIdAndOrganId(externalId, organId);
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface ResolutionActionService {
 
-    CancellationResolution cancelResolutionByOrgan(User user, Long id, CancellationResolutionRequestDTO dto);
+    void cancelResolutionByOrgan(User user, Long externalId, CancellationResolutionRequestDTO dto);
 
     @Transactional
     void cancelResolutionByCourt(Resolution resolution, ReasonCancellationAlias reasonAlias, Long climeId);

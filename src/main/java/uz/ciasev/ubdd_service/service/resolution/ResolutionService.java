@@ -1,5 +1,6 @@
 package uz.ciasev.ubdd_service.service.resolution;
 
+import org.springframework.data.jpa.repository.Query;
 import uz.ciasev.ubdd_service.dto.internal.response.adm.resolution.CancellationResolutionListResponseDTO;
 import uz.ciasev.ubdd_service.dto.internal.response.adm.resolution.ResolutionDetailResponseDTO;
 import uz.ciasev.ubdd_service.dto.internal.response.adm.resolution.ResolutionListResponseDTO;
@@ -9,6 +10,7 @@ import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
 import uz.ciasev.ubdd_service.entity.court.CourtFile;
 import uz.ciasev.ubdd_service.entity.resolution.Resolution;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
+import uz.ciasev.ubdd_service.entity.resolution.punishment.PenaltyPunishment;
 import uz.ciasev.ubdd_service.entity.status.AdmStatus;
 import uz.ciasev.ubdd_service.service.generator.ResolutionNumberGeneratorService;
 
@@ -57,5 +59,5 @@ public interface ResolutionService {
 
     boolean isResolutionActiveByCompensationId(Long compensationId);
 
-    List<CancellationResolutionListResponseDTO> findCancellationsById(Long id);
+    Optional<Resolution> findPenaltyPunishmentByExternalIdAndOrganId(String externalId, Long organId);
 }
