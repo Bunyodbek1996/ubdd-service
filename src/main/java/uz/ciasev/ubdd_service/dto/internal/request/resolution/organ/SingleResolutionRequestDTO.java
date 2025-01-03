@@ -119,7 +119,7 @@ public class SingleResolutionRequestDTO implements DecisionRequestDTO, Resolutio
     public Decision buildDecision() {
         Decision decision = new Decision();
 
-        decision.setDecisionTypeAlias(this.getDecisionType());
+        decision.setDecisionTypeAlias(DecisionTypeAlias.getInstanceById(this.getDecisionType().getId()));
         decision.setTerminationReason(this.getTerminationReason());
         decision.setExecutionFromDate(this.getExecutionFromDate());
         decision.setArticle33(isArticle33);
@@ -164,6 +164,14 @@ public class SingleResolutionRequestDTO implements DecisionRequestDTO, Resolutio
         return List.of(this);
     }
 
+    public void setDecisionTypeObj(DecisionType decisionType) {
+        if (decisionType == null) {
+            return;
+        }
+        this.decisionTypeObj = decisionType;
+        this.decisionType = decisionType.getAlias();
+
+    }
 
     @Override
     public LocalDate getExecutionFromDate() {
