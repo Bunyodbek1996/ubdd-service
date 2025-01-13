@@ -53,6 +53,23 @@ spring:
     encoding:
       charset: UTF-8
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:10.1.40.52:9094}
+    consumer:
+      group-id: my-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      retries: 3
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+
 reading-database:
   datasource:
     jdbc-url: jdbc:postgresql://${MVD_CIASEV_DATASOURCE_HOST_READ}:${MVD_CIASEV_DATASOURCE_PORT}/mvdciasev?serverTimezone\=UTC&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true

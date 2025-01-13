@@ -98,6 +98,7 @@ dependencies {
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 	implementation 'org.modelmapper:modelmapper:2.1.1'
+	implementation 'org.springframework.kafka:spring-kafka:2.8.7'
 }
 
 test {
