@@ -2,6 +2,7 @@ package uz.ciasev.ubdd_service.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uz.ciasev.ubdd_service.entity.admcase.AdmCase;
 import uz.ciasev.ubdd_service.entity.protocol.Protocol;
 import uz.ciasev.ubdd_service.entity.resolution.Resolution;
 import uz.ciasev.ubdd_service.entity.resolution.decision.Decision;
@@ -23,7 +24,17 @@ public class AdmEventServiceImpl implements AdmEventService {
     @Override
     public void fireEvent(AdmEventType type, Object data) {
 
-        if (AdmEventType.PROTOCOL_CREATE.equals(type)) {
+        if (AdmEventType.ADM_CASE_STATUS_CHANGE.equals(type)) {
+            if (data instanceof AdmCase) {
+                WebhookEventMessage webhookEventMessage = WebhookEventMessage.builder()
+                        .eventType(String.valueOf(type))
+                        .admCaseId(((AdmCase) data).getId())
+                        .build();
+                webhookKafkaProducer.sendEvent(webhookEventMessage);
+            } else {
+                throw new AdmEventUnexpectedDataTypeError(AdmEventType.ADM_CASE_STATUS_CHANGE, AdmCase.class, data);
+            }
+        } else if (AdmEventType.PROTOCOL_CREATE.equals(type)) {
 
             if (data instanceof Protocol) {
                 WebhookEventMessage webhookEventMessage = WebhookEventMessage.builder()
