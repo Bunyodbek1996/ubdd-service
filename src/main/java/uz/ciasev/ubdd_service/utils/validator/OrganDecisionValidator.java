@@ -31,19 +31,6 @@ public class OrganDecisionValidator extends DecisionValidator implements Constra
 
         boolean isValid = super.isValid(decisionRequestDTO, context);
 
-        if (decisionRequestDTO.getExecutionFromDate() != null) {
-
-            if (LocalDate.now().isAfter(decisionRequestDTO.getExecutionFromDate())) {
-                isValid = false;
-                context.buildConstraintViolationWithTemplate(ErrorCode.EXECUTION_FROM_DATE_IN_PAST).addConstraintViolation();
-            }
-
-            if (decisionRequestDTO.getExecutionFromDate().isAfter(LocalDate.now().plusMonths(1))) {
-                isValid = false;
-                context.buildConstraintViolationWithTemplate(ErrorCode.EXECUTION_FROM_DATE_MORE_THEN_1_MONTH_IN_FUTURE).addConstraintViolation();
-            }
-        }
-
         if (decisionRequestDTO.getDecisionType().is(PUNISHMENT) && Objects.isNull(decisionRequestDTO.getArticlePart())) {
             isValid = false;
             context.buildConstraintViolationWithTemplate(ErrorCode.ARTICLE_PART_REQUIRED).addConstraintViolation();
